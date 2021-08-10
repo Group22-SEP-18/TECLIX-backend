@@ -26,6 +26,7 @@ class StaffManager(BaseUserManager):
         user.is_staff = True
         user.save()
         return user
+#     test
 
 
 # Create your models here.
