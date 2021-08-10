@@ -9,13 +9,14 @@ class RegisterStaffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['email', 'password', 'user_role', 'first_name', 'last_name', 'contact_no', 'profile_picture']
+        fields = ['email', 'employee_no', 'password', 'user_role', 'first_name', 'last_name', 'contact_no',
+                  'profile_picture']
 
     def validate(self, attrs):
         first_name = attrs.get('first_name', '')
         last_name = attrs.get('last_name', '')
         contact_no = attrs.get('contact_no', '')
-
+        employee_no = attrs.get('employee_no', '')
         if not first_name.isalpha():
             raise serializers.ValidationError("The first name should only contain letters")
 
@@ -26,6 +27,8 @@ class RegisterStaffSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("the contact number should only contain numbers.")
         if not len(contact_no) == 10:
             raise serializers.ValidationError("the contact number must be 10 digits long.")
+        if not contact_no.isalnum():
+            raise serializers.ValidationError("the contact number should only contain  alpha numeric characters.")
         return attrs
 
     def create(self, validated_data):
@@ -38,6 +41,7 @@ class LoginStaffSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=48, min_length=6, write_only=True)
     first_name = serializers.CharField(max_length=225, read_only=True)
     last_name = serializers.CharField(max_length=225, read_only=True)
+    employee_no = serializers.CharField(max_length=10, read_only=True)
     token = serializers.SerializerMethodField()
 
     user = None
@@ -54,7 +58,7 @@ class LoginStaffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['id', 'email', 'password', 'first_name', 'last_name', 'token']
+        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -67,9 +71,8 @@ class LoginStaffSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Your account is not approved.')
         if not user.is_active:
             raise AuthenticationFailed('Your account is disabled.')
-
         return {
-            'staff_id': user.id,
+            'employee_no': user.employee_no,
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,

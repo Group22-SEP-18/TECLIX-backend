@@ -4,11 +4,13 @@ from knox.models import AuthToken
 
 
 class StaffManager(BaseUserManager):
-    def create_user(self, email, user_role, first_name, last_name, contact_no, profile_picture, password=None):
+    def create_user(self, email, employee_no, user_role, first_name, last_name, contact_no, profile_picture,
+                    password=None):
         if email is None:
             raise TypeError('User should have a email')
 
-        user = self.model(email=self.normalize_email(email), user_role=user_role, first_name=first_name,
+        user = self.model(email=self.normalize_email(email), employee_no=employee_no, user_role=user_role,
+                          first_name=first_name,
                           last_name=last_name,
                           contact_no=contact_no, profile_picture=profile_picture)
         user.set_password(password)
@@ -20,7 +22,7 @@ class StaffManager(BaseUserManager):
             raise TypeError('password can not be empty')
         if email is None:
             raise TypeError('User should have an email')
-        user = self.create_user(email, '', first_name, '', '', '', password)
+        user = self.create_user(email, '', '', first_name, '', '', '', password)
         user.is_superuser = True
         user.is_approved = True
         user.is_staff = True
@@ -36,6 +38,7 @@ class Staff(AbstractBaseUser, PermissionsMixin):
         ('MANAGER', 'Operations Manager')
     }
     email = models.EmailField(max_length=255, unique=True, db_index=True)
+    employee_no = models.CharField(max_length=10, unique=True, db_index=True)
     user_role = models.CharField(choices=USER_ROLES, max_length=50)
     first_name = models.CharField(max_length=225)
     last_name = models.CharField(max_length=225)
