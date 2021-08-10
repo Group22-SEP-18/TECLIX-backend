@@ -43,7 +43,7 @@ class Staff(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=225)
     last_name = models.CharField(max_length=225)
     contact_no = models.CharField(max_length=10)
-    profile_picture = models.ImageField(upload_to='staff/')
+    profile_picture = models.ImageField(upload_to='staff/', max_length=255)
     is_approved = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
