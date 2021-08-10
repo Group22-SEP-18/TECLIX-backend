@@ -40,8 +40,13 @@ INSTALLED_APPS = [
     'drf_yasg',
     'dj_database_url',
     'django_extensions',
+    'knox',
+    'users',
 
 ]
+
+AUTH_USER_MODEL = 'users.Staff'
+
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Token': {
