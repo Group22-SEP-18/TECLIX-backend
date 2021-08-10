@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'knox',
     'users',
+    'cloudinary_storage',
 
 ]
 
@@ -135,8 +136,17 @@ USE_TZ = True
 
 DISABLE_COLLECTSTATIC = 1
 STATIC_URL = '/static/'
+MEDIA_URL = '/teclix/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config('CLOUD_NAME'),
+    "API_KEY": config('API_KEY'),
+    "API_SECRET": config('API_SECRET')
+
+}
