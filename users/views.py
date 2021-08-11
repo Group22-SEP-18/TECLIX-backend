@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from rest_framework import generics, status
-from .serializers import RegisterStaffSerializer, LoginStaffSerializer
+from rest_framework import generics, status, permissions
+from .serializers import RegisterStaffSerializer, LoginStaffSerializer, UserDetailSerializer
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -36,3 +36,11 @@ class LoginStaffView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetLoggedUserFromToken(generics.RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user

@@ -81,3 +81,16 @@ class LoginStaffSerializer(serializers.ModelSerializer):
             'profile_picture': user.profile_picture
 
         }
+
+
+# this is used to get details of a user who is logged in
+class UserDetailSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=225, min_length=3, read_only=True)
+    first_name = serializers.CharField(max_length=225, read_only=True)
+    last_name = serializers.CharField(max_length=225, read_only=True)
+    employee_no = serializers.CharField(max_length=10, read_only=True)
+    profile_picture = serializers.ImageField(read_only=True)
+
+    class Meta:
+        model = Staff
+        fields = ['employee_no', 'email', 'first_name', 'last_name', 'token', 'profile_picture']
