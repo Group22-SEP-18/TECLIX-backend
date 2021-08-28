@@ -14,3 +14,7 @@ To run the project.
 ```bash
 $ python manage.py runserver 
 ```
+To reset the database.
+```bash
+$ python manage.py reset_db 
+```

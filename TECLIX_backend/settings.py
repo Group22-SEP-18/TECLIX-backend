@@ -40,8 +40,14 @@ INSTALLED_APPS = [
     'drf_yasg',
     'dj_database_url',
     'django_extensions',
+    'knox',
+    'users',
+    'cloudinary_storage',
 
 ]
+
+AUTH_USER_MODEL = 'users.Staff'
+
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Token': {
@@ -61,6 +67,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
 
 ROOT_URLCONF = 'TECLIX_backend.urls'
 
@@ -126,8 +136,17 @@ USE_TZ = True
 
 DISABLE_COLLECTSTATIC = 1
 STATIC_URL = '/static/'
+MEDIA_URL = '/teclix/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config('CLOUD_NAME'),
+    "API_KEY": config('API_KEY'),
+    "API_SECRET": config('API_SECRET')
+
+}
