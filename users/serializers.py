@@ -94,3 +94,11 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ['employee_no', 'email', 'first_name', 'last_name', 'token', 'profile_picture']
+
+
+# this to specify what attrs required in the service order list
+
+class ServiceOrderSalespersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['employee_no', 'email', 'first_name', 'last_name', 'profile_picture']
