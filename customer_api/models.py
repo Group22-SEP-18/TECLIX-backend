@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Staff
+from asset_api.models import Product
 
 
 # Create your models here.
@@ -48,3 +49,23 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.shop_name
+
+
+class ServiceOrder(models.Model):
+    customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE)
+    salesperson = models.ForeignKey(to=Staff, on_delete=models.CASCADE)
+    order_date = models.DateField(auto_now_add=True)
+    original_price = models.DecimalField(max_digits=8, decimal_places=2)
+    discount = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return str(self.id)
+
+
+class OrderProduct(models.Model):
+    order = models.ForeignKey(to=ServiceOrder, on_delete=models.CASCADE, db_index=True)
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.id)
