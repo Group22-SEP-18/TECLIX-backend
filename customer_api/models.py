@@ -48,7 +48,7 @@ class Customer(models.Model):
     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.shop_name
+        return str(self.id)
 
 
 class ServiceOrder(models.Model):
