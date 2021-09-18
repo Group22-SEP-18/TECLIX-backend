@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'users',
     'cloudinary_storage',
     'customer_api',
+    'asset_api',
 
 ]
 
