@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Customer, ServiceOrder
+from .models import Customer, ServiceOrder, OrderProduct
 from users.serializers import ServiceOrderSalespersonSerializer
+from asset_api.serializers import ProductDetailsSerializer
 
 
 class CustomerViewSerializer(serializers.ModelSerializer):
@@ -24,11 +25,23 @@ class ServiceOrderCustomerSerializer(serializers.ModelSerializer):
         fields = ['shop_name', 'owner_first_name', 'owner_last_name', 'profile_picture', ]
 
 
+class OrderProductItemSerializer(serializers.ModelSerializer):
+    product = ProductDetailsSerializer()
+
+    class Meta:
+        model = OrderProduct
+        fields = ['product', 'quantity']
+
+
 class ServiceOrderViewSerializer(serializers.ModelSerializer):
     customer = ServiceOrderCustomerSerializer()
     salesperson = ServiceOrderSalespersonSerializer()
 
+    order_items = OrderProductItemSerializer(many=True, read_only=True)
+
     class Meta:
         fields = '__all__'
+        extra_fields = ['order_items']
         model = ServiceOrder
-        depth = 1
+        # this will automatically resolve all the onetoone fields
+        # depth = 1

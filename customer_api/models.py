@@ -63,9 +63,13 @@ class ServiceOrder(models.Model):
 
 
 class OrderProduct(models.Model):
-    order = models.ForeignKey(to=ServiceOrder, on_delete=models.CASCADE, db_index=True)
+    order = models.ForeignKey(to=ServiceOrder, related_name='order_items', on_delete=models.CASCADE, db_index=True)
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ['order', 'product']
+        ordering = ['order']
 
     def __str__(self):
         return str(self.id)

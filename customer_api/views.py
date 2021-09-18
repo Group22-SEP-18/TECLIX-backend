@@ -1,4 +1,4 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer
 from .models import Customer, ServiceOrder
@@ -24,8 +24,9 @@ class CustomerView(RetrieveUpdateDestroyAPIView):
 
 class ServiceOrderListView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
-    permission_classes = (IsAuthenticated,)
+
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        orders = ServiceOrder.objects.select_related('customer')
+        orders = ServiceOrder.objects.all()
         return orders
