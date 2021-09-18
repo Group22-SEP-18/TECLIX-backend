@@ -30,3 +30,9 @@ class ServiceOrderListView(ListAPIView):
     def get_queryset(self):
         orders = ServiceOrder.objects.all()
         return orders
+
+
+class ServiceOrderView(RetrieveAPIView):
+    serializer_class = ServiceOrderViewSerializer
+    queryset = ServiceOrder.objects.all()
+    lookup_field = "id"
