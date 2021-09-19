@@ -86,3 +86,9 @@ class CustomerLatePayViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerLatePay
         fields = '__all__'
+
+
+class CustomerLatePayCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerLatePay
+        exclude = ['salesperson']

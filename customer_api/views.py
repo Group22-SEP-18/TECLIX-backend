@@ -1,8 +1,10 @@
+import decimal
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
     CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
-    CustomerSearchSerializer, CustomerLatePayViewSerializer
+    CustomerSearchSerializer, CustomerLatePayViewSerializer, CustomerLatePayCreateSerializer
 from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
 
@@ -82,3 +84,15 @@ class CustomerLatePayView(ListAPIView):
     def get_queryset(self):
         payments = CustomerLatePay.objects.all()
         return payments
+
+
+# post customer late pay
+class CreateLatePayView(CreateAPIView):
+    serializer_class = CustomerLatePayCreateSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        cus = Customer.objects.get(id=self.request.data['customer'])
+        cus.outstanding -= decimal.Decimal(self.request.data['amount'])
+        cus.save()
+        return serializer.save(salesperson=self.request.user)
