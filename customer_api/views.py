@@ -28,7 +28,7 @@ class CustomerView(RetrieveUpdateDestroyAPIView):
 class ServiceOrderListView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         orders = ServiceOrder.objects.all()
