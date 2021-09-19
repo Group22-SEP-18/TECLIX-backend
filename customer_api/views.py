@@ -1,6 +1,7 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
+    CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer
+from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer
 from .models import Customer, ServiceOrder
 
 
@@ -48,3 +49,11 @@ class CustomerServiceOrdersView(ListAPIView):
     def get_queryset(self):
         orders = ServiceOrder.objects.filter(customer_id=self.kwargs['id'])
         return orders
+
+
+# create so view
+class CreateServiceOrderView(CreateAPIView):
+    serializer_class = CreateServiceOrderSerializer
+
+    def perform_create(self, serializer):
+        return serializer.save()

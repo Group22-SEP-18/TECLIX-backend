@@ -45,3 +45,26 @@ class ServiceOrderViewSerializer(serializers.ModelSerializer):
         model = ServiceOrder
         # this will automatically resolve all the onetoone fields
         # depth = 1
+
+
+# serializers to create so
+class OrderProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderProduct
+        exclude = ['order']
+
+
+class CreateServiceOrderSerializer(serializers.ModelSerializer):
+    order_items = OrderProductCreateSerializer(many=True)
+
+    class Meta:
+        model = ServiceOrder
+        fields = '__all__'
+        extra_fields = ['order_items']
+
+    def create(self, validated_data):
+        order_data = validated_data.pop('order_items')
+        so = ServiceOrder.objects.create(**validated_data)
+        for item in order_data:
+            OrderProduct.objects.create(order=so, **item)
+        return so
