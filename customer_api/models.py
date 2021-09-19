@@ -85,3 +85,11 @@ class CustomerLatePay(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class CustomerLoyaltyPointScheme(models.Model):
+    minimum_amount = models.DecimalField(max_digits=8, decimal_places=2)
+    point_percentage = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return str(self.id) + ' ' + str(self.minimum_amount) + '> '

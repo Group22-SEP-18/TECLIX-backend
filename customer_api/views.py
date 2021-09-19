@@ -1,8 +1,11 @@
+import decimal
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
-    CreateAPIView
+    CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
-    CustomerSearchSerializer, CustomerLatePayViewSerializer
+    CustomerSearchSerializer, CustomerLatePayListViewSerializer, CustomerLatePayCreateSerializer, \
+    CustomerLatePayViewSerializer, UpdateLoyaltyPointsSerializer, CustomerLoyaltyPointScheme
 from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
 
@@ -28,7 +31,7 @@ class CustomerView(RetrieveUpdateDestroyAPIView):
 class ServiceOrderListView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         orders = ServiceOrder.objects.all()
@@ -74,11 +77,40 @@ class SearchCustomerView(ListAPIView):
 
 
 # customer late payment related
-class CustomerLatePayView(ListAPIView):
-    serializer_class = CustomerLatePayViewSerializer
+class AllCustomerLatePayView(ListAPIView):
+    serializer_class = CustomerLatePayListViewSerializer
 
     # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         payments = CustomerLatePay.objects.all()
         return payments
+
+
+# post customer late pay
+class CreateLatePayView(CreateAPIView):
+    serializer_class = CustomerLatePayCreateSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        cus = Customer.objects.get(id=self.request.data['customer'])
+        cus.outstanding -= decimal.Decimal(self.request.data['amount'])
+        cus.save()
+        return serializer.save(salesperson=self.request.user)
+
+
+# view late per customer
+class CustomerLatePayView(ListAPIView):
+    serializer_class = CustomerLatePayViewSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        payments = CustomerLatePay.objects.filter(customer_id=self.kwargs['id'])
+        return payments
+
+
+class UpdateLoyaltyPointsView(UpdateAPIView):
+    serializer_class = UpdateLoyaltyPointsSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = CustomerLoyaltyPointScheme.objects.all()
+    lookup_field = 'id'
