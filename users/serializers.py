@@ -102,3 +102,10 @@ class SalespersonDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ['employee_no', 'email', 'first_name', 'last_name', 'profile_picture']
+
+
+#  approve salesperson accounts
+class ApproveAccSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['is_approved']

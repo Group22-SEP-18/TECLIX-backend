@@ -8,6 +8,7 @@ from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, Cre
     CustomerLatePayViewSerializer, UpdateLoyaltyPointsSerializer, CustomerLoyaltyPointScheme
 from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
+from users.permissions import IsSalesperson, IsManager
 
 
 # Create your views here.
@@ -62,13 +63,13 @@ class CustomerServiceOrdersView(ListAPIView):
 # create so view
 class CreateServiceOrderView(CreateAPIView):
     serializer_class = CreateServiceOrderSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsSalesperson)
 
     def perform_create(self, serializer):
         return serializer.save(salesperson=self.request.user)
 
 
-# search cutomer view
+# search customer view
 class SearchCustomerView(ListAPIView):
     serializer_class = CustomerSearchSerializer
     queryset = Customer.objects.all()
@@ -80,7 +81,7 @@ class SearchCustomerView(ListAPIView):
 class AllCustomerLatePayView(ListAPIView):
     serializer_class = CustomerLatePayListViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         payments = CustomerLatePay.objects.all()
@@ -90,7 +91,7 @@ class AllCustomerLatePayView(ListAPIView):
 # post customer late pay
 class CreateLatePayView(CreateAPIView):
     serializer_class = CustomerLatePayCreateSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsSalesperson)
 
     def perform_create(self, serializer):
         cus = Customer.objects.get(id=self.request.data['customer'])
@@ -111,6 +112,6 @@ class CustomerLatePayView(ListAPIView):
 
 class UpdateLoyaltyPointsView(UpdateAPIView):
     serializer_class = UpdateLoyaltyPointsSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsManager)
     queryset = CustomerLoyaltyPointScheme.objects.all()
     lookup_field = 'id'

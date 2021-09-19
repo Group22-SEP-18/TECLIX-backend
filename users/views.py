@@ -1,9 +1,12 @@
-from django.shortcuts import render
 from rest_framework import generics, status, permissions
-from .serializers import RegisterStaffSerializer, LoginStaffSerializer, UserDetailSerializer
+from rest_framework.decorators import permission_classes
+
+from .serializers import RegisterStaffSerializer, LoginStaffSerializer, UserDetailSerializer, \
+    ApproveAccSerializer
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
+from .permissions import IsManager, IsOfficer
 
 
 # Create your views here.
@@ -44,3 +47,18 @@ class GetLoggedUserFromToken(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+# update salesperson approve state
+class UpdateSalespersonAccStateView(generics.UpdateAPIView):
+    serializer_class = ApproveAccSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOfficer)
+    queryset = Staff.objects.all()
+    lookup_field = 'id'
+
+
+class UpdateDistOfficerAccStateView(generics.UpdateAPIView):
+    serializer_class = ApproveAccSerializer
+    permission_classes = (permissions.IsAuthenticated, IsManager)
+    queryset = Staff.objects.all()
+    lookup_field = 'id'
