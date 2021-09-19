@@ -68,3 +68,11 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
         for item in order_data:
             OrderProduct.objects.create(order=so, **item)
         return so
+
+
+# customer search serializer
+
+class CustomerSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        exclude = ['created_by']

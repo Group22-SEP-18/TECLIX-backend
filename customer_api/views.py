@@ -1,8 +1,10 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
     CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer
+from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
+    CustomerSearchSerializer
 from .models import Customer, ServiceOrder
+from rest_framework import filters
 
 
 # Create your views here.
@@ -61,3 +63,11 @@ class CreateServiceOrderView(CreateAPIView):
 
     def perform_create(self, serializer):
         return serializer.save(salesperson=self.request.user)
+
+
+# search cutomer view
+class SearchCustomerView(ListAPIView):
+    serializer_class = CustomerSearchSerializer
+    queryset = Customer.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['shop_name', 'owner_first_name', 'owner_last_name']
