@@ -55,7 +55,7 @@ class Staff(AbstractBaseUser, PermissionsMixin):
     objects = StaffManager()
 
     def __str__(self):
-        return self.email
+        return str(self.id)
 
     def token(self):
         token = AuthToken.objects.create(self)[1]

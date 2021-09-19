@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'knox',
     'users',
     'cloudinary_storage',
+    'customer_api',
+    'asset_api',
 
 ]
 
