@@ -32,7 +32,7 @@ class Customer(models.Model):
         ('Trincomalee', 'Trincomalee'),
         ('Vavuniya', 'Vavuniya')
     }
-    shop_name = models.CharField(max_length=225)
+    shop_name = models.CharField(max_length=225, db_index=True)
     owner_first_name = models.CharField(max_length=100)
     owner_last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=255, unique=True)
@@ -73,4 +73,14 @@ class OrderProduct(models.Model):
 
     def __str__(self):
         return str(self.order)
-   
+
+
+class CustomerLatePay(models.Model):
+    customer = models.ForeignKey(to=Customer, related_name='late_pay_customer', on_delete=models.CASCADE, db_index=True)
+    salesperson = models.ForeignKey(to=Staff, related_name='late_pay_sp', on_delete=models.CASCADE,
+                                    db_index=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.id)
