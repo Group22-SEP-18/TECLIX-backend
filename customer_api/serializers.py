@@ -59,7 +59,7 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServiceOrder
-        fields = '__all__'
+        exclude = ['salesperson']
         extra_fields = ['order_items']
 
     def create(self, validated_data):

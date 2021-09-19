@@ -26,7 +26,7 @@ class CustomerView(RetrieveUpdateDestroyAPIView):
 class ServiceOrderListView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         orders = ServiceOrder.objects.all()
@@ -36,6 +36,8 @@ class ServiceOrderListView(ListAPIView):
 # view so by id
 class ServiceOrderView(RetrieveAPIView):
     serializer_class = ServiceOrderViewSerializer
+    permission_classes = (IsAuthenticated,)
+
     queryset = ServiceOrder.objects.all()
     lookup_field = "id"
 
@@ -43,6 +45,7 @@ class ServiceOrderView(RetrieveAPIView):
 #  view all so by customer
 class CustomerServiceOrdersView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
+    permission_classes = (IsAuthenticated,)
 
     # lookup_field = 'customer'
 
@@ -54,6 +57,7 @@ class CustomerServiceOrdersView(ListAPIView):
 # create so view
 class CreateServiceOrderView(CreateAPIView):
     serializer_class = CreateServiceOrderSerializer
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        return serializer.save()
+        return serializer.save(salesperson=self.request.user)
