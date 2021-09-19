@@ -6,7 +6,7 @@ from .serializers import RegisterStaffSerializer, LoginStaffSerializer, UserDeta
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
-from rest_framework.views import APIView
+from .permissions import IsManager, IsOfficer
 
 
 # Create your views here.
@@ -52,13 +52,13 @@ class GetLoggedUserFromToken(generics.RetrieveAPIView):
 # update salesperson approve state
 class UpdateSalespersonAccStateView(generics.UpdateAPIView):
     serializer_class = ApproveAccSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOfficer)
     queryset = Staff.objects.all()
     lookup_field = 'id'
 
 
 class UpdateDistOfficerAccStateView(generics.UpdateAPIView):
     serializer_class = ApproveAccSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsManager)
     queryset = Staff.objects.all()
     lookup_field = 'id'
