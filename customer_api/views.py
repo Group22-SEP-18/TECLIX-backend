@@ -4,7 +4,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
     CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
-    CustomerSearchSerializer, CustomerLatePayViewSerializer, CustomerLatePayCreateSerializer
+    CustomerSearchSerializer, CustomerLatePayListViewSerializer, CustomerLatePayCreateSerializer, \
+    CustomerLatePayViewSerializer
 from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
 
@@ -76,8 +77,8 @@ class SearchCustomerView(ListAPIView):
 
 
 # customer late payment related
-class CustomerLatePayView(ListAPIView):
-    serializer_class = CustomerLatePayViewSerializer
+class AllCustomerLatePayView(ListAPIView):
+    serializer_class = CustomerLatePayListViewSerializer
 
     # permission_classes = (IsAuthenticated,)
 
@@ -96,3 +97,13 @@ class CreateLatePayView(CreateAPIView):
         cus.outstanding -= decimal.Decimal(self.request.data['amount'])
         cus.save()
         return serializer.save(salesperson=self.request.user)
+
+
+# view late per customer
+class CustomerLatePayView(ListAPIView):
+    serializer_class = CustomerLatePayViewSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        payments = CustomerLatePay.objects.filter(customer_id=self.kwargs['id'])
+        return payments

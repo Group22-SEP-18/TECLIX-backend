@@ -79,7 +79,7 @@ class CustomerSearchSerializer(serializers.ModelSerializer):
 
 
 # customer late pay related
-class CustomerLatePayViewSerializer(serializers.ModelSerializer):
+class CustomerLatePayListViewSerializer(serializers.ModelSerializer):
     customer = CustomerDetailSerializer()
     salesperson = SalespersonDetailSerializer()
 
@@ -88,7 +88,16 @@ class CustomerLatePayViewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# post customer late pay serializer
 class CustomerLatePayCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerLatePay
         exclude = ['salesperson']
+
+
+class CustomerLatePayViewSerializer(serializers.ModelSerializer):
+    salesperson = SalespersonDetailSerializer()
+
+    class Meta:
+        model = CustomerLatePay
+        fields = '__all__'
