@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay
+from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay, CustomerLoyaltyPointScheme
 from users.serializers import SalespersonDetailSerializer
 from asset_api.serializers import SOProductDetailsSerializer
 
@@ -100,4 +100,11 @@ class CustomerLatePayViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomerLatePay
+        fields = '__all__'
+
+
+# update loyalty points
+class UpdateLoyaltyPointsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerLoyaltyPointScheme
         fields = '__all__'

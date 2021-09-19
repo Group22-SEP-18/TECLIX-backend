@@ -1,11 +1,11 @@
 import decimal
 
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
-    CreateAPIView
+    CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
     CustomerSearchSerializer, CustomerLatePayListViewSerializer, CustomerLatePayCreateSerializer, \
-    CustomerLatePayViewSerializer
+    CustomerLatePayViewSerializer, UpdateLoyaltyPointsSerializer, CustomerLoyaltyPointScheme
 from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
 
@@ -107,3 +107,10 @@ class CustomerLatePayView(ListAPIView):
     def get_queryset(self):
         payments = CustomerLatePay.objects.filter(customer_id=self.kwargs['id'])
         return payments
+
+
+class UpdateLoyaltyPointsView(UpdateAPIView):
+    serializer_class = UpdateLoyaltyPointsSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = CustomerLoyaltyPointScheme.objects.all()
+    lookup_field = 'id'
