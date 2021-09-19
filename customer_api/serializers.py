@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Customer, ServiceOrder, OrderProduct
-from users.serializers import ServiceOrderSalespersonSerializer
+from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay
+from users.serializers import SalespersonDetailSerializer
 from asset_api.serializers import ProductDetailsSerializer
 
 
@@ -19,7 +19,7 @@ class CustomerViewSerializer(serializers.ModelSerializer):
 
 
 # this to specify what attrs required in the service order list
-class ServiceOrderCustomerSerializer(serializers.ModelSerializer):
+class CustomerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['shop_name', 'owner_first_name', 'owner_last_name', 'profile_picture', ]
@@ -34,8 +34,8 @@ class OrderProductItemSerializer(serializers.ModelSerializer):
 
 
 class ServiceOrderViewSerializer(serializers.ModelSerializer):
-    customer = ServiceOrderCustomerSerializer()
-    salesperson = ServiceOrderSalespersonSerializer()
+    customer = CustomerDetailSerializer()
+    salesperson = SalespersonDetailSerializer()
 
     order_items = OrderProductItemSerializer(many=True, read_only=True)
 
@@ -76,3 +76,13 @@ class CustomerSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         exclude = ['created_by']
+
+
+# customer late pay related
+class CustomerLatePayViewSerializer(serializers.ModelSerializer):
+    customer = CustomerDetailSerializer()
+    salesperson = SalespersonDetailSerializer()
+
+    class Meta:
+        model = CustomerLatePay
+        fields = '__all__'

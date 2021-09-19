@@ -2,8 +2,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
     CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
-    CustomerSearchSerializer
-from .models import Customer, ServiceOrder
+    CustomerSearchSerializer, CustomerLatePayViewSerializer
+from .models import Customer, ServiceOrder, CustomerLatePay
 from rest_framework import filters
 
 
@@ -28,7 +28,7 @@ class CustomerView(RetrieveUpdateDestroyAPIView):
 class ServiceOrderListView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
 
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         orders = ServiceOrder.objects.all()
@@ -71,3 +71,14 @@ class SearchCustomerView(ListAPIView):
     queryset = Customer.objects.all()
     filter_backends = [filters.SearchFilter]
     search_fields = ['shop_name', 'owner_first_name', 'owner_last_name']
+
+
+# customer late payment related
+class CustomerLatePayView(ListAPIView):
+    serializer_class = CustomerLatePayViewSerializer
+
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        payments = CustomerLatePay.objects.all()
+        return payments

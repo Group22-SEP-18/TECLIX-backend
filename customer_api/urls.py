@@ -1,5 +1,5 @@
 from .views import CustomerListView, CustomerView, ServiceOrderListView, ServiceOrderView, CustomerServiceOrdersView, \
-    CreateServiceOrderView, SearchCustomerView
+    CreateServiceOrderView, SearchCustomerView, CustomerLatePayView
 from django.urls import path
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     path('service-orders/create', CreateServiceOrderView.as_view(), name='create-so'),
     path('service-orders/<int:id>', ServiceOrderView.as_view(), name='get-so'),
     path('service-orders/cus/<int:id>', CustomerServiceOrdersView.as_view(), name='all-customer-so'),
+    path('late-payment/', CustomerLatePayView.as_view(), name='all-late-pay'),
 
 ]
