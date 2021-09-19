@@ -64,8 +64,9 @@ class ServiceOrder(models.Model):
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(to=ServiceOrder, related_name='order_items', on_delete=models.CASCADE, db_index=True)
-    product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='product_details')
     quantity = models.PositiveIntegerField()
+    price_at_the_time = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
     class Meta:
         unique_together = ['order', 'product']

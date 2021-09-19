@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay
 from users.serializers import SalespersonDetailSerializer
-from asset_api.serializers import ProductDetailsSerializer
+from asset_api.serializers import SOProductDetailsSerializer
 
 
 class CustomerViewSerializer(serializers.ModelSerializer):
@@ -26,11 +26,11 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
 
 
 class OrderProductItemSerializer(serializers.ModelSerializer):
-    product = ProductDetailsSerializer()
+    product = SOProductDetailsSerializer()
 
     class Meta:
         model = OrderProduct
-        fields = ['product', 'quantity']
+        fields = ['product', 'quantity', 'price_at_the_time']
 
 
 class ServiceOrderViewSerializer(serializers.ModelSerializer):
