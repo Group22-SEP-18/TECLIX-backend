@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', "False") == "True"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # add deployed url of heroku
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', ]  # add deployed url of heroku
 # Application definition
 
 INSTALLED_APPS = [
@@ -146,10 +146,11 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+django_heroku.settings(locals())
+
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config('CLOUD_NAME'),
     "API_KEY": config('API_KEY'),
     "API_SECRET": config('API_SECRET')
 
 }
-django_heroku.settings(locals())
