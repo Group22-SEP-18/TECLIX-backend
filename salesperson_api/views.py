@@ -1,10 +1,10 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from customer_api.serializers import ServiceOrderViewSerializer
-from .serializers import SalespersonViewSerializer, LocationListViewSerializer, LeaderboardViewSerializer
+from .serializers import SalespersonViewSerializer, LocationListViewSerializer, LeaderboardViewSerializer, LeaderboardPointSchemaViewSerializer
 from users.models import Staff
 from customer_api.models import ServiceOrder
-from .models import SalespersonLocation, Leaderboard
+from .models import SalespersonLocation, Leaderboard, LeaderboardPointSchema
 
 
 # Create your views here.
@@ -57,3 +57,8 @@ class LeaderboardView(ListAPIView):
     serializer_class = LeaderboardViewSerializer
     # permission_classes = (IsAuthenticated,)
     queryset = Leaderboard.objects.all()
+
+class LeaderboardPointSchemaView(ListCreateAPIView):
+    serializer_class = LeaderboardPointSchemaViewSerializer
+    # permission_classes = (IsAuthenticated,)
+    queryset = LeaderboardPointSchema.objects.all()

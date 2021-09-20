@@ -1,4 +1,4 @@
-from .views import SalespersonListView, SalespersonView, LocationListView, CurrentLocationListView, SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView
+from .views import SalespersonListView, SalespersonView, LocationListView, CurrentLocationListView, SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView, LeaderboardPointSchemaView
 from django.urls import path
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('locations/<str:id>', SalespersonLocationView.as_view(), name='all-locations'),
     path('service-orders/salesperson/<str:id>', SalespersonServiceOrdersView.as_view(), name='all-salesperson-so'),
     path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
+    path('leaderboard-point-schema/', LeaderboardPointSchemaView.as_view(), name='leaderboard-point-schema'),
 ]
