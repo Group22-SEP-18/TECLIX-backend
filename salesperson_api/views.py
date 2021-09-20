@@ -21,3 +21,10 @@ class LocationListView(ListAPIView):
     # permission_classes = (IsAuthenticated,)
     queryset = SalespersonLocation.objects.all()
 
+class CurrentLocationListView(ListAPIView):
+    serializer_class = LocationListViewSerializer
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        current_locations = SalespersonLocation.objects.all().order_by('salesperson', 'date').distinct('salesperson')
+        return current_locations
