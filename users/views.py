@@ -1,8 +1,8 @@
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import permission_classes
 
-from .serializers import RegisterStaffSerializer, LoginStaffSerializer, UserDetailSerializer, \
-    ApproveAccSerializer
+from .serializers import RegisterStaffSerializer, LoginWebStaffSerializer, UserDetailSerializer, \
+    ApproveAccSerializer, LoginSalespersonSerializer
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -32,8 +32,17 @@ class RegisterStaffView(generics.GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class LoginStaffView(generics.GenericAPIView):
-    serializer_class = LoginStaffSerializer
+class LoginWebStaffView(generics.GenericAPIView):
+    serializer_class = LoginWebStaffSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LoginSalespersonStaffView(generics.GenericAPIView):
+    serializer_class = LoginSalespersonSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
