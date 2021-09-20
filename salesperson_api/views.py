@@ -1,8 +1,9 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, \
-    RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
+from customer_api.serializers import ServiceOrderViewSerializer
 from .serializers import SalespersonViewSerializer, LocationListViewSerializer
 from users.models import Staff
+from customer_api.models import ServiceOrder
 from .models import SalespersonLocation
 
 
@@ -37,3 +38,11 @@ class SalespersonLocationView(ListAPIView):
     def get_queryset(self):
         locations = SalespersonLocation.objects.filter(salesperson_id=self.kwargs['id'])
         return locations
+
+class SalespersonServiceOrdersView(ListAPIView):
+    serializer_class = ServiceOrderViewSerializer
+    # permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        orders = ServiceOrder.objects.filter(salesperson_id=self.kwargs['id'])
+        return orders
