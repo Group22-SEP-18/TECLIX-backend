@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from customer_api.serializers import ServiceOrderViewSerializer
 from .serializers import SalespersonViewSerializer, LocationListViewSerializer
@@ -16,6 +16,12 @@ class SalespersonListView(ListAPIView):
         salespersons = Staff.objects.filter(user_role='SALESPERSON')
         return salespersons
 
+
+class SalespersonView(RetrieveUpdateAPIView):
+    serializer_class = SalespersonViewSerializer
+    # permission_classes = (IsAuthenticated,)
+    queryset = Staff.objects.filter()
+    lookup_field = "id"
 
 class LocationListView(ListAPIView):
     serializer_class = LocationListViewSerializer
