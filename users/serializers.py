@@ -35,7 +35,60 @@ class RegisterStaffSerializer(serializers.ModelSerializer):
         return Staff.objects.create_user(**validated_data)
 
 
-class LoginStaffSerializer(serializers.ModelSerializer):
+class LoginWebStaffSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=225, min_length=3)
+    password = serializers.CharField(max_length=48, min_length=6, write_only=True)
+    first_name = serializers.CharField(max_length=225, read_only=True)
+    last_name = serializers.CharField(max_length=225, read_only=True)
+    employee_no = serializers.CharField(max_length=10, read_only=True)
+    token = serializers.SerializerMethodField()
+    profile_picture = serializers.ImageField(read_only=True)
+    user_role = serializers.CharField(read_only=True)
+
+    user = None
+
+    def __init__(self, *args, **kwargs):
+        super(LoginWebStaffSerializer, self).__init__(*args, **kwargs)
+        try:
+            self.user = Staff.objects.get(email=kwargs['data']['email'])
+        except:
+            pass
+
+    def get_token(self, obj):
+        return self.user.token()
+
+    class Meta:
+        model = Staff
+        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture', 'user_role'
+                  ]
+
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        password = attrs.get('password', '')
+        user = auth.authenticate(email=email, password=password)
+
+        if not user:
+            raise AuthenticationFailed('Invalid credentials')
+        if not user.is_approved:
+            raise AuthenticationFailed('Your account is not approved.')
+        if not user.is_active:
+            raise AuthenticationFailed('Your account is disabled.')
+        if user.user_role == 'SALESPERSON':
+            raise AuthenticationFailed('You are not authorized to use the application.')
+
+        return {
+            'employee_no': user.employee_no,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'token': user.token,
+            'profile_picture': user.profile_picture
+
+        }
+
+
+# serializer for the salesperson login
+class LoginSalespersonSerializer(serializers.ModelSerializer):
     # staff_id = serializers.IntegerField()
     email = serializers.EmailField(max_length=225, min_length=3)
     password = serializers.CharField(max_length=48, min_length=6, write_only=True)
@@ -48,7 +101,7 @@ class LoginStaffSerializer(serializers.ModelSerializer):
     user = None
 
     def __init__(self, *args, **kwargs):
-        super(LoginStaffSerializer, self).__init__(*args, **kwargs)
+        super(LoginSalespersonSerializer, self).__init__(*args, **kwargs)
         try:
             self.user = Staff.objects.get(email=kwargs['data']['email'])
         except:
@@ -72,6 +125,8 @@ class LoginStaffSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Your account is not approved.')
         if not user.is_active:
             raise AuthenticationFailed('Your account is disabled.')
+        if user.user_role != 'SALESPERSON':
+            raise AuthenticationFailed('You are not authorized to use the application.')
         return {
             'employee_no': user.employee_no,
             'email': user.email,
