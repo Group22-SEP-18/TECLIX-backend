@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', "False") == "True"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', ]  # add deployed url of heroku
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://teclix.herokuapp.com/']  # add deployed url of heroku
 # Application definition
 
 INSTALLED_APPS = [
