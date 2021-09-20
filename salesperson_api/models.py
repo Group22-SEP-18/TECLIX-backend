@@ -17,3 +17,15 @@ class Leaderboard(models.Model):
     points_today = models.DecimalField(max_digits=8, decimal_places=2)
     points_today = models.DecimalField(max_digits=8, decimal_places=2)
     points_today = models.DecimalField(max_digits=8, decimal_places=2)
+
+class LeaderboardPointSchema(models.Model):
+    POINTS_TYPE_OPTIONS = {
+        ('LATE_PAYMENTS', 'Late Payments'),
+        ('SO', 'Service Orders'),
+        ('ITEM_COUNT', 'Item Count')
+    }
+    points_type = models.CharField(choices=POINTS_TYPE_OPTIONS, max_length=100)
+    price_lowerbound = models.DecimalField(max_digits=11, decimal_places=2)
+    price_upperbound = models.DecimalField(max_digits=11, decimal_places=2)
+    percentage = models.DecimalField(max_digits=4, decimal_places=2)
+    bonus_points = models.DecimalField(max_digits=8, decimal_places=2)
