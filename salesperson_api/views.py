@@ -1,10 +1,10 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from customer_api.serializers import ServiceOrderViewSerializer
-from .serializers import SalespersonViewSerializer, LocationListViewSerializer
+from .serializers import SalespersonViewSerializer, LocationListViewSerializer, LeaderboardViewSerializer
 from users.models import Staff
 from customer_api.models import ServiceOrder
-from .models import SalespersonLocation
+from .models import SalespersonLocation, Leaderboard
 
 
 # Create your views here.
@@ -52,3 +52,8 @@ class SalespersonServiceOrdersView(ListAPIView):
     def get_queryset(self):
         orders = ServiceOrder.objects.filter(salesperson_id=self.kwargs['id'])
         return orders
+
+class LeaderboardView(ListAPIView):
+    serializer_class = LeaderboardViewSerializer
+    # permission_classes = (IsAuthenticated,)
+    queryset = Leaderboard.objects.all()

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from users.models import Staff
 from customer_api.models import Customer
-from .models import SalespersonLocation
+from .models import SalespersonLocation, Leaderboard
 
 
 class SalespersonViewSerializer(serializers.ModelSerializer):
@@ -19,4 +19,9 @@ class LocationListViewSerializer(serializers.ModelSerializer):
     salesperson = SalespersonViewSerializer()
     class Meta:
         model = SalespersonLocation
+        fields = '__all__'
+
+class LeaderboardViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Leaderboard
         fields = '__all__'
