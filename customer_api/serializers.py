@@ -104,7 +104,7 @@ class CustomerLatePayViewSerializer(serializers.ModelSerializer):
 
 
 # update loyalty points
-class UpdateLoyaltyPointsSerializer(serializers.ModelSerializer):
+class LoyaltyPointsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerLoyaltyPointScheme
         fields = '__all__'
