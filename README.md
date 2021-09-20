@@ -1,4 +1,6 @@
 ## TECLIX-backend
+### Deployed url
+https://teclix.herokuapp.com/
 ### Guide
 clone the repository using the HTTPS link
 ### Environment setup
