@@ -11,3 +11,9 @@ class SalespersonLocation(models.Model):
 
     def __str__(self):
         return str(self.salesperson)
+
+class Leaderboard(models.Model):
+    salesperson = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
+    points_today = models.DecimalField(max_digits=8, decimal_places=2)
+    points_today = models.DecimalField(max_digits=8, decimal_places=2)
+    points_today = models.DecimalField(max_digits=8, decimal_places=2)
