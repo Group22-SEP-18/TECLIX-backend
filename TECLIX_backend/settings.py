@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'customer_api',
     'asset_api',
-    'salesperson_api'
+    'salesperson_api',
+    'corsheaders',
 
 ]
 
@@ -65,6 +66,7 @@ SWAGGER_SETTINGS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -155,3 +157,5 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": config('API_SECRET')
 
 }
+
+CORS_ORIGIN_WHITELIST = 'http://localhost:3000',
