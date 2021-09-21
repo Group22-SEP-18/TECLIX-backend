@@ -7,6 +7,7 @@ from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
 from .permissions import IsManager, IsOfficer
+from .renderer import UserRenderer
 
 
 # Create your views here.
@@ -43,6 +44,7 @@ class LoginWebStaffView(generics.GenericAPIView):
 
 class LoginSalespersonStaffView(generics.GenericAPIView):
     serializer_class = LoginSalespersonSerializer
+    renderer_classes = (UserRenderer,)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
