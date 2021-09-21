@@ -82,7 +82,8 @@ class LoginWebStaffSerializer(serializers.ModelSerializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'token': user.token,
-            'profile_picture': user.profile_picture
+            'profile_picture': user.profile_picture,
+            'user_role': user.user_role
 
         }
 
