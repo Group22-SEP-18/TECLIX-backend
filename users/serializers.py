@@ -98,6 +98,7 @@ class LoginSalespersonSerializer(serializers.ModelSerializer):
     employee_no = serializers.CharField(max_length=10, read_only=True)
     token = serializers.SerializerMethodField()
     profile_picture = serializers.ImageField(read_only=True)
+    contact_no = serializers.CharField(max_length=10, read_only=True)
 
     user = None
 
@@ -113,7 +114,8 @@ class LoginSalespersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture']
+        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture',
+                  'contact_no']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -134,7 +136,8 @@ class LoginSalespersonSerializer(serializers.ModelSerializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'token': user.token,
-            'profile_picture': user.profile_picture
+            'profile_picture': user.profile_picture,
+            'contact_no': user.contact_no,
 
         }
 
