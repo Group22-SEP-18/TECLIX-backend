@@ -6,7 +6,7 @@ from .views import RegisterStaffView, LoginWebStaffView, GetLoggedUserFromToken,
 urlpatterns = [
     path('register/', RegisterStaffView.as_view(), name='staff-register'),
     path('login/web', LoginWebStaffView.as_view(), name='web-login'),
-    path('login/salesperson', LoginSalespersonStaffView.as_view(), name='mobile-login'),
+    path('login/salesperson/', LoginSalespersonStaffView.as_view(), name='mobile-login'),
 
     path('logged-in-user/', GetLoggedUserFromToken.as_view(), name='staff-logged-user'),
     path('logout/', knox_views.LogoutView.as_view(), name='staff-logout'),
