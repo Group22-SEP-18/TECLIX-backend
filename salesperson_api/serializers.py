@@ -22,6 +22,7 @@ class LocationListViewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LeaderboardViewSerializer(serializers.ModelSerializer):
+    salesperson = SalespersonViewSerializer()
     class Meta:
         model = Leaderboard
         fields = '__all__'
