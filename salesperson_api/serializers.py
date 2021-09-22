@@ -7,7 +7,7 @@ from .models import SalespersonLocation, Leaderboard, LeaderboardPointSchema
 class SalespersonViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['email', 'employee_no', 'first_name', 'last_name', 'contact_no', 'profile_picture', 'is_approved', ]
+        fields = ['id','email', 'employee_no', 'first_name', 'last_name', 'contact_no', 'profile_picture', 'is_approved', ]
 
 class CustomerLocationSerializer(serializers.ModelSerializer):
     class Meta:
