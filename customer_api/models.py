@@ -37,14 +37,14 @@ class Customer(models.Model):
     owner_last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=255, unique=True)
     contact_no = models.CharField(max_length=10)
-    profile_picture = models.ImageField(upload_to='customer/', max_length=255)
+    profile_picture = models.ImageField(upload_to='customer/', max_length=255, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     street = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     district = models.CharField(choices=DISTRICT_OPTIONS, max_length=100)
-    loyalty_points = models.DecimalField(max_digits=8, decimal_places=2)
-    outstanding = models.DecimalField(max_digits=8, decimal_places=2)
+    loyalty_points = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    outstanding = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
