@@ -39,20 +39,6 @@ class Vehicle(models.Model):
         return str(self.id)
 
 
-class VehicleProduct(models.Model):
-    vehicle = models.ForeignKey(to=Vehicle, related_name='assigned_vehicle', on_delete=models.CASCADE, db_index=True)
-    product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='assigned_products')
-    quantity = models.PositiveIntegerField()
-    assigned_by = models.ForeignKey(to=Staff, related_name='products_assigner', on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ['vehicle', 'product']
-        ordering = ['vehicle']
-
-    def __str__(self):
-        return str(self.vehicle)
-
-
 class VehicleSalesperson(models.Model):
     vehicle = models.ForeignKey(to=Vehicle, on_delete=models.CASCADE, db_index=True)
     salesperson = models.ForeignKey(to=Staff, related_name='vehicle_salesperson', on_delete=models.CASCADE)
@@ -64,3 +50,18 @@ class VehicleSalesperson(models.Model):
 
     def __str__(self):
         return str(self.vehicle) + ' ' + str(self.salesperson)
+
+
+class VehicleProduct(models.Model):
+    vehicle_salesperson = models.ForeignKey(to=VehicleSalesperson, related_name='assigned_vehicle',
+                                            on_delete=models.CASCADE,
+                                            db_index=True)
+    product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='assigned_products')
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ['vehicle_salesperson', 'product']
+        ordering = ['vehicle_salesperson']
+
+    def __str__(self):
+        return str(self.vehicle_salesperson)

@@ -1,8 +1,11 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from _cffi_backend import Lib
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, \
+    RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ProductDetailsSerializer, ProductViewSerializer, VehicleDetailsSerializer, \
-    VehicleViewSerializer, AssignVehicleProductSerializer, AssignVehicleSalespersonSerializer
-from .models import Product, Vehicle
+    VehicleViewSerializer, AssignVehicleSalespersonSerializer, \
+    SalespersonAssignedVehicleSerializer
+from .models import Product, Vehicle, VehicleSalesperson, VehicleProduct
 from users.permissions import IsOfficer
 
 
@@ -53,19 +56,28 @@ class VehicleListView(ListAPIView):
         return vehicle
 
 
-class AssignVehicleProductsView(CreateAPIView):
-    serializer_class = AssignVehicleProductSerializer
+# class AssignVehicleProductsView(CreateAPIView):
+#     serializer_class = AssignVehicleProductSerializer
+#
+#     permission_classes = (IsAuthenticated, IsOfficer)
+#
+#     def perform_create(self, serializer):
+#         return serializer.save(assigned_by=self.request.user)
 
-    permission_classes = (IsAuthenticated, IsOfficer)
 
-    def perform_create(self, serializer):
-        return serializer.save(assigned_by=self.request.user)
-
-
-class AssignVehicleSalespersonView(CreateAPIView):
+class AssignVehicleItemsView(CreateAPIView):
     serializer_class = AssignVehicleSalespersonSerializer
 
     permission_classes = (IsAuthenticated, IsOfficer)
 
     def perform_create(self, serializer):
         return serializer.save(assigned_by=self.request.user)
+
+
+class AssignedProductsListVehicleView(ListAPIView):
+    serializer_class = SalespersonAssignedVehicleSerializer
+    permission_classes = (IsAuthenticated,)
+
+    # lookup_field = "id"
+    def get_queryset(self):
+        return VehicleSalesperson.objects.filter(salesperson=self.request.user)
