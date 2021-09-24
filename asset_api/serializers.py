@@ -37,23 +37,7 @@ class VehicleViewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VehicleProductItemSerializer(serializers.ModelSerializer):
-    product = ProductDetailsSerializer()
-
+class AssignVehicleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleProduct
-        fields = ['product', 'quantity']
-
-
-# GET all vehicles and assigned product/salesperson details
-class VehicleListViewSerializer(serializers.ModelSerializer):
-    salesperson = SalespersonDetailSerializer()
-
-    assigned_products = VehicleProductItemSerializer(many=True, read_only=True)
-
-    class Meta:
         fields = '__all__'
-        extra_fields = ['assigned_products']
-        model = Vehicle
-
-# assign products and salesperson to a given vehicle

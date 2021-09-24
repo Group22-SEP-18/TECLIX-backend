@@ -50,16 +50,3 @@ class VehicleProduct(models.Model):
 
     def __str__(self):
         return str(self.vehicle)
-
-# class VehicleSalesperson(models.Model):
-#     vehicle = models.ForeignKey(to=Vehicle, name='assigned_vehicle', on_delete=models.CASCADE, db_index=True)
-#     salesperson = models.ForeignKey(to=Product, on_delete=models.CASCADE, name='assigned_products')
-#     date = models.DateField(auto_now_add=True)
-#     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
-
-#     class Meta:
-#         unique_together = ['vehicle', 'salesperson']
-#         ordering = ['vehicle']
-
-#     def __str__(self):
-#         return str(self.vehicle)
