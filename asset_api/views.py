@@ -1,8 +1,9 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ProductDetailsSerializer, ProductViewSerializer, VehicleDetailsSerializer, \
-    VehicleViewSerializer, AssignVehicleProductSerializer
-from .models import Product, Vehicle, VehicleProduct
+    VehicleViewSerializer, AssignVehicleProductSerializer, AssignVehicleSalespersonSerializer
+from .models import Product, Vehicle
+from users.permissions import IsOfficer
 
 
 # Create a product POST, GET all products
@@ -55,7 +56,16 @@ class VehicleListView(ListAPIView):
 class AssignVehicleProductsView(CreateAPIView):
     serializer_class = AssignVehicleProductSerializer
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOfficer)
 
     def perform_create(self, serializer):
-        return serializer.save()
+        return serializer.save(assigned_by=self.request.user)
+
+
+class AssignVehicleSalespersonView(CreateAPIView):
+    serializer_class = AssignVehicleSalespersonSerializer
+
+    permission_classes = (IsAuthenticated, IsOfficer)
+
+    def perform_create(self, serializer):
+        return serializer.save(assigned_by=self.request.user)
