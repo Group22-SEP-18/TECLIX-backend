@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Vehicle, VehicleProduct
-from users.serializers import SalespersonDetailSerializer
+from .models import Product, Vehicle, VehicleProduct, VehicleSalesperson
 
 
 # GET all products, Create a product POST
@@ -37,23 +36,13 @@ class VehicleViewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VehicleProductItemSerializer(serializers.ModelSerializer):
-    product = ProductDetailsSerializer()
-
+class AssignVehicleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleProduct
-        fields = ['product', 'quantity']
+        exclude = ['assigned_by']
 
 
-# GET all vehicles and assigned product/salesperson details
-class VehicleListViewSerializer(serializers.ModelSerializer):
-    salesperson = SalespersonDetailSerializer()
-
-    assigned_products = VehicleProductItemSerializer(many=True, read_only=True)
-
+class AssignVehicleSalespersonSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
-        extra_fields = ['assigned_products']
-        model = Vehicle
-
-# assign products and salesperson to a given vehicle
+        model = VehicleSalesperson
+        exclude = ['assigned_by']

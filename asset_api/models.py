@@ -43,6 +43,7 @@ class VehicleProduct(models.Model):
     vehicle = models.ForeignKey(to=Vehicle, related_name='assigned_vehicle', on_delete=models.CASCADE, db_index=True)
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='assigned_products')
     quantity = models.PositiveIntegerField()
+    assigned_by = models.ForeignKey(to=Staff, related_name='products_assigner', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ['vehicle', 'product']
@@ -51,15 +52,15 @@ class VehicleProduct(models.Model):
     def __str__(self):
         return str(self.vehicle)
 
-# class VehicleSalesperson(models.Model):
-#     vehicle = models.ForeignKey(to=Vehicle, name='assigned_vehicle', on_delete=models.CASCADE, db_index=True)
-#     salesperson = models.ForeignKey(to=Product, on_delete=models.CASCADE, name='assigned_products')
-#     date = models.DateField(auto_now_add=True)
-#     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
 
-#     class Meta:
-#         unique_together = ['vehicle', 'salesperson']
-#         ordering = ['vehicle']
+class VehicleSalesperson(models.Model):
+    vehicle = models.ForeignKey(to=Vehicle, on_delete=models.CASCADE, db_index=True)
+    salesperson = models.ForeignKey(to=Staff, related_name='vehicle_salesperson', on_delete=models.CASCADE)
+    assigned_by = models.ForeignKey(to=Staff, related_name='salesperson_assigner', on_delete=models.CASCADE)
 
-#     def __str__(self):
-#         return str(self.vehicle)
+    class Meta:
+        unique_together = ['vehicle', 'salesperson']
+        ordering = ['vehicle']
+
+    def __str__(self):
+        return str(self.vehicle) + ' ' + str(self.salesperson)
