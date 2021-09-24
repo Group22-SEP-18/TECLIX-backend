@@ -36,13 +36,48 @@ class VehicleViewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AssignVehicleProductSerializer(serializers.ModelSerializer):
+class VehicleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = VehicleProduct
-        exclude = ['assigned_by']
+        exclude = ['vehicle_salesperson']
 
 
 class AssignVehicleSalespersonSerializer(serializers.ModelSerializer):
+    assigned_vehicle = VehicleProductSerializer(many=True)
+
     class Meta:
         model = VehicleSalesperson
         exclude = ['assigned_by']
+        extra_fields = ['assigned_vehicle']
+
+    def create(self, validated_data):
+        product_data = validated_data.pop('assigned_vehicle')
+        vehicleSp = VehicleSalesperson.objects.create(**validated_data)
+        for item in product_data:
+            VehicleProduct.objects.create(vehicle_salesperson=vehicleSp, **item)
+        return vehicleSp
+
+
+class VehicleDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicle
+        exclude = ['created_by']
+
+
+class AssignedVehicleItemsSerializer(serializers.ModelSerializer):
+    product = ProductDetailsSerializer()
+
+    class Meta:
+        model = VehicleProduct
+        fields = ['product', 'quantity']
+
+
+class SalespersonAssignedVehicleSerializer(serializers.ModelSerializer):
+    vehicle = VehicleDetailSerializer()
+
+    assigned_vehicle = AssignedVehicleItemsSerializer(many=True, )
+
+    class Meta:
+        model = VehicleSalesperson
+        exclude = ['assigned_by']
+        extra_fields = ['assigned_vehicle']
