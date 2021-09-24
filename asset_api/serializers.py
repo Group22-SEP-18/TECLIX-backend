@@ -2,11 +2,11 @@ from rest_framework import serializers
 from .models import Product, Vehicle, VehicleProduct
 from users.serializers import SalespersonDetailSerializer
 
-#GET all products, Create a product POST
+
+# GET all products, Create a product POST
 class ProductDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        # fields = '__all__'
         exclude = ['created_by']
 
 
@@ -15,24 +15,27 @@ class SOProductDetailsSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ['price']
 
-#Single product GET, PUT, DELETE
+
+# Single product GET, PUT, DELETE
 class ProductViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
-#Create a vehicle POST
+
+# Create a vehicle POST
 class VehicleDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
-        # fields = '__all__'
         exclude = ['created_by']
 
-#Single Vehicle GET, PUT, DELETE
+
+# Single Vehicle GET, PUT, DELETE
 class VehicleViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = '__all__'
+
 
 class VehicleProductItemSerializer(serializers.ModelSerializer):
     product = ProductDetailsSerializer()
@@ -41,7 +44,8 @@ class VehicleProductItemSerializer(serializers.ModelSerializer):
         model = VehicleProduct
         fields = ['product', 'quantity']
 
-#GET all vehicles and assigned product/salesperson details
+
+# GET all vehicles and assigned product/salesperson details
 class VehicleListViewSerializer(serializers.ModelSerializer):
     salesperson = SalespersonDetailSerializer()
 
@@ -52,5 +56,4 @@ class VehicleListViewSerializer(serializers.ModelSerializer):
         extra_fields = ['assigned_products']
         model = Vehicle
 
-#assign products and salesperson to a given vehicle
-
+# assign products and salesperson to a given vehicle

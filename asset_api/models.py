@@ -12,14 +12,14 @@ class Product(models.Model):
     }
     short_name = models.CharField(max_length=80)
     long_name = models.CharField(max_length=250)
-    product_image = models.ImageField(upload_to='product/', max_length=255)
+    product_image = models.ImageField(upload_to='product/', max_length=255, blank=True)
     category = models.CharField(choices=CATEGORY_OPTIONS, max_length=150)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
 
-
     def __str__(self):
         return str(self.id)
+
 
 class Vehicle(models.Model):
     VEHICLE_TYPES = {
@@ -37,6 +37,7 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 class VehicleProduct(models.Model):
     vehicle = models.ForeignKey(to=Vehicle, related_name='assigned_vehicle', on_delete=models.CASCADE, db_index=True)
