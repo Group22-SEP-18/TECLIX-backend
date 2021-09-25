@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.decorators import permission_classes
 
 from .serializers import RegisterStaffSerializer, LoginWebStaffSerializer, UserDetailSerializer, \
-    ApproveAccSerializer, LoginSalespersonSerializer
+    ApproveAccSerializer, LoginSalespersonSerializer, DOAccountSerializer
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -76,3 +76,11 @@ class UpdateDistOfficerAccStateView(generics.UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated, IsManager)
     queryset = Staff.objects.all()
     lookup_field = 'id'
+
+
+class GetDOAccountsView(generics.ListAPIView):
+    serializer_class = DOAccountSerializer
+    permission_classes = (permissions.IsAuthenticated, IsManager)
+
+    def get_queryset(self):
+        return Staff.objects.filter(user_role='OFFICER')
