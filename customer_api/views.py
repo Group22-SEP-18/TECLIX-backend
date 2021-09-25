@@ -9,6 +9,7 @@ from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, Cre
 from .models import Customer, ServiceOrder, CustomerLatePay, CustomerLoyaltyPointScheme
 from rest_framework import filters
 from users.permissions import IsSalesperson, IsManager
+from salesperson_api.models import Leaderboard, LeaderboardPointSchema
 
 
 # Create your views here.
@@ -97,6 +98,20 @@ class CreateLatePayView(CreateAPIView):
         cus = Customer.objects.get(id=self.request.data['customer'])
         cus.outstanding -= decimal.Decimal(self.request.data['amount'])
         cus.save()
+        
+        # get leaderboard obj
+        lb_object = Leaderboard.objects.get(salesperson=self.request.user)
+
+        # get the points from schema
+        schema = LeaderboardPointSchema.objects.get(points_type='LATE_PAYMENTS')
+
+        # update leaderboard
+        points = schema.bonus_points + decimal.Decimal(
+            self.request.data['amount']) * schema.percentage / 100
+        lb_object.points_today += points
+        lb_object.points_current_month += points
+        lb_object.points_all_time += points
+        lb_object.save()
         return serializer.save(salesperson=self.request.user)
 
 
