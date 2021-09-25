@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay, CustomerLoyaltyPointScheme
 from users.serializers import SalespersonDetailSerializer
 from asset_api.serializers import SOProductDetailsSerializer
-from salesperson_api.models import LeaderboardPointSchema, Leaderboard
+from salesperson_api.models import LeaderboardPointSchema, Leaderboard, SalespersonLocation
 import decimal
 
 
@@ -74,6 +74,8 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
         so = ServiceOrder.objects.create(**validated_data)
         for item in order_data:
             OrderProduct.objects.create(order=so, **item)
+
+        #     get leaderboard obj
         lb_object = Leaderboard.objects.get(salesperson=so.salesperson)
 
         if so_type == 'later':
@@ -94,6 +96,7 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
             lb_object.points_all_time += points
             lb_object.save()
 
+        SalespersonLocation.objects.create(customer=so.customer, salesperson=so.salesperson)
         return so
 
 
