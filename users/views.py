@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from knox.models import AuthToken
 from .permissions import IsManager, IsOfficer
 from .renderer import UserRenderer
+from salesperson_api.models import Leaderboard
 
 
 # Create your views here.
@@ -23,6 +24,8 @@ class RegisterStaffView(generics.GenericAPIView):
         user_data = serializer.data
 
         user = Staff.objects.get(email=user_data['email'])
+        if user.user_role == 'SALESPERSON':
+            Leaderboard.objects.create(salesperson=user)
 
         token = AuthToken.objects.create(user)[1]
 
