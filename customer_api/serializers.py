@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay, CustomerLoyaltyPointScheme
 from users.serializers import SalespersonDetailSerializer
 from asset_api.serializers import SOProductDetailsSerializer
+from salesperson_api.models import LeaderboardPointSchema, Leaderboard, SalespersonLocation
+import decimal
 
 
 class CustomerViewSerializer(serializers.ModelSerializer):
@@ -55,22 +57,51 @@ class OrderProductCreateSerializer(serializers.ModelSerializer):
 
 
 class CreateServiceOrderSerializer(serializers.ModelSerializer):
+    PAYMENT_OPTION = [('later', 'later'), ('now', 'now')]
     order_items = OrderProductCreateSerializer(many=True)
+    so_type = serializers.ChoiceField(choices=PAYMENT_OPTION, write_only=True)
 
     class Meta:
         model = ServiceOrder
         exclude = ['salesperson']
-        extra_fields = ['order_items']
+        extra_fields = ['order_items', 'so_type']
 
     def create(self, validated_data):
         order_data = validated_data.pop('order_items')
+
+        # get payment type
+        so_type = validated_data.pop('so_type')
         so = ServiceOrder.objects.create(**validated_data)
         for item in order_data:
             OrderProduct.objects.create(order=so, **item)
+
+        #     get leaderboard obj
+        lb_object = Leaderboard.objects.get(salesperson=so.salesperson)
+
+        if so_type == 'later':
+            schema = LeaderboardPointSchema.objects.get(points_type='SO_PAY_LATER')
+            points = schema.bonus_points + decimal.Decimal(
+                so.original_price) * schema.percentage / 100
+            lb_object.points_today += points
+            lb_object.points_current_month += points
+            lb_object.points_all_time += points
+            lb_object.save()
+
+        else:
+            schema = LeaderboardPointSchema.objects.get(points_type='SO_PAY')
+            points = schema.bonus_points + decimal.Decimal(
+                so.original_price) * schema.percentage / 100
+            lb_object.points_today += points
+            lb_object.points_current_month += points
+            lb_object.points_all_time += points
+            lb_object.save()
+
+        SalespersonLocation.objects.create(customer=so.customer, salesperson=so.salesperson)
         return so
 
 
 # customer search serializer
+
 
 class CustomerSearchSerializer(serializers.ModelSerializer):
     class Meta:

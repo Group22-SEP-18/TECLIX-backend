@@ -23,11 +23,10 @@ class Leaderboard(models.Model):
 class LeaderboardPointSchema(models.Model):
     POINTS_TYPE_OPTIONS = {
         ('LATE_PAYMENTS', 'Late Payments'),
-        ('SO', 'Service Orders'),
-        ('ITEM_COUNT', 'Item Count')
+        ('SO_PAY', 'SO payed'),
+        ('SO_PAY_LATER', 'SO pay later'),
+        ('CUSTOMER_CREATION', 'customer creation')
     }
     points_type = models.CharField(choices=POINTS_TYPE_OPTIONS, max_length=100)
-    price_lowerbound = models.DecimalField(max_digits=11, decimal_places=2)
-    price_upperbound = models.DecimalField(max_digits=11, decimal_places=2)
     percentage = models.DecimalField(max_digits=4, decimal_places=2)
     bonus_points = models.DecimalField(max_digits=8, decimal_places=2)
