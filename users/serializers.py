@@ -168,3 +168,10 @@ class ApproveAccSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ['is_approved']
+
+
+# distribution officer serializer
+class DOAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['employee_no', 'email', 'first_name', 'last_name', 'profile_picture', 'is_rejected', 'is_approved']

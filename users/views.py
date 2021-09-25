@@ -2,7 +2,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.decorators import permission_classes
 
 from .serializers import RegisterStaffSerializer, LoginWebStaffSerializer, UserDetailSerializer, \
-    ApproveAccSerializer, LoginSalespersonSerializer
+    ApproveAccSerializer, LoginSalespersonSerializer, DOAccountSerializer
 from .models import Staff
 from rest_framework.response import Response
 from knox.models import AuthToken
@@ -64,15 +64,39 @@ class GetLoggedUserFromToken(generics.RetrieveAPIView):
 
 
 # update salesperson approve state
-class UpdateSalespersonAccStateView(generics.UpdateAPIView):
+class UpdateSalespersonAccStateView(generics.CreateAPIView):
     serializer_class = ApproveAccSerializer
     permission_classes = (permissions.IsAuthenticated, IsOfficer)
     queryset = Staff.objects.all()
     lookup_field = 'id'
 
+    def perform_create(self, serializer):
+        do = Staff.objects.get(id=self.kwargs['id']);
+        print(self.kwargs['id'])
+        if not self.request.data['is_approved']:
+            do.is_rejected = True
+        do.is_approved = self.request.data['is_approved']
+        return do.save()
 
-class UpdateDistOfficerAccStateView(generics.UpdateAPIView):
+
+class UpdateDistOfficerAccStateView(generics.CreateAPIView):
     serializer_class = ApproveAccSerializer
     permission_classes = (permissions.IsAuthenticated, IsManager)
     queryset = Staff.objects.all()
     lookup_field = 'id'
+
+    def perform_create(self, serializer):
+        do = Staff.objects.get(id=self.kwargs['id']);
+        print(self.kwargs['id'])
+        if not self.request.data['is_approved']:
+            do.is_rejected = True
+        do.is_approved = self.request.data['is_approved']
+        return do.save()
+
+
+class GetDOAccountsView(generics.ListAPIView):
+    serializer_class = DOAccountSerializer
+    permission_classes = (permissions.IsAuthenticated, IsManager)
+
+    def get_queryset(self):
+        return Staff.objects.filter(user_role='OFFICER')
