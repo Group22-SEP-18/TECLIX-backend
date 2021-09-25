@@ -66,7 +66,7 @@ class SalespersonServiceOrdersView(ListAPIView):
 class LeaderboardView(ListAPIView):
     serializer_class = LeaderboardViewSerializer
     # permission_classes = (IsAuthenticated,)
-    queryset = Leaderboard.objects.all().order_by('-points_current_month')[:10]
+    queryset = Leaderboard.objects.all().order_by('-points_current_month')
 
 
 class LeaderboardPointSchemaView(ListCreateAPIView):
