@@ -43,7 +43,7 @@ class Vehicle(models.Model):
 
 
 class VehicleSalesperson(models.Model):
-    vehicle = models.ForeignKey(to=Vehicle, on_delete=models.CASCADE, db_index=True)
+    vehicle = models.ForeignKey(to=Vehicle, related_name='vehicle_items', on_delete=models.CASCADE, db_index=True)
     salesperson = models.ForeignKey(to=Staff, related_name='vehicle_salesperson', on_delete=models.CASCADE)
     assigned_by = models.ForeignKey(to=Staff, related_name='salesperson_assigner', on_delete=models.CASCADE)
 

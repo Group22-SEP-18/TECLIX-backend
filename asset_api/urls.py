@@ -1,5 +1,5 @@
 from .views import ProductListView, ProductView, VehicleCreateView, VehicleView, VehicleListView, \
-    AssignVehicleItemsView, AssignedProductsListVehicleView
+    AssignVehicleItemsView, AssignedProductsListVehicleView, AllAssignedProductsListVehicleView
 from django.urls import path
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     path('vehicles/<int:id>', VehicleView.as_view(), name='single-vehicle'),
     path('vehicle/assign-items/', AssignVehicleItemsView.as_view(), name='assign-vehicle-items'),
     path('vehicle/salesperson/', AssignedProductsListVehicleView.as_view(), name='get-vehicle-items'),
+    path('vehicle/salesperson/all', AllAssignedProductsListVehicleView.as_view(), name='all-vehicle-items'),
 
 ]

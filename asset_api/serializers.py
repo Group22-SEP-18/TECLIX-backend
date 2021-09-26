@@ -82,14 +82,3 @@ class SalespersonAssignedVehicleSerializer(serializers.ModelSerializer):
         model = VehicleSalesperson
         exclude = ['assigned_by']
         extra_fields = ['assigned_vehicle']
-
-#GET all vehicles and assigned product/salesperson details
-class VehicleListViewSerializer(serializers.ModelSerializer):
-    assigned_salesperson = SalespersonDetailSerializer()
-
-    assigned_products = AssignedVehicleItemsSerializer(many=True, read_only=True)
-
-    class Meta:
-        fields = '__all__'
-        extra_fields = ['assigned_products']
-        model = Vehicle

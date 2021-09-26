@@ -4,7 +4,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDe
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ProductDetailsSerializer, ProductViewSerializer, VehicleDetailsSerializer, \
     VehicleViewSerializer, AssignVehicleSalespersonSerializer, \
-    SalespersonAssignedVehicleSerializer, VehicleListViewSerializer
+    SalespersonAssignedVehicleSerializer
 from .models import Product, Vehicle, VehicleSalesperson, VehicleProduct
 from users.permissions import IsOfficer
 
@@ -47,22 +47,13 @@ class VehicleView(RetrieveUpdateDestroyAPIView):
 
 # GET all vehicle details
 class VehicleListView(ListAPIView):
-    serializer_class = VehicleListViewSerializer
+    serializer_class = VehicleViewSerializer
 
     # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         vehicle = Vehicle.objects.all()
         return vehicle
-
-
-# class AssignVehicleProductsView(CreateAPIView):
-#     serializer_class = AssignVehicleProductSerializer
-#
-#     permission_classes = (IsAuthenticated, IsOfficer)
-#
-#     def perform_create(self, serializer):
-#         return serializer.save(assigned_by=self.request.user)
 
 
 class AssignVehicleItemsView(CreateAPIView):
@@ -81,3 +72,12 @@ class AssignedProductsListVehicleView(ListAPIView):
     # lookup_field = "id"
     def get_queryset(self):
         return VehicleSalesperson.objects.filter(salesperson=self.request.user)
+
+
+class AllAssignedProductsListVehicleView(ListAPIView):
+    serializer_class = SalespersonAssignedVehicleSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return VehicleSalesperson.objects.all()
