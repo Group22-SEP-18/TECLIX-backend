@@ -59,8 +59,8 @@ class LoginWebStaffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture', 'user_role'
-                  ]
+        fields = ['id', 'employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture',
+                  'user_role']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -83,7 +83,8 @@ class LoginWebStaffSerializer(serializers.ModelSerializer):
             'last_name': user.last_name,
             'token': user.token,
             'profile_picture': user.profile_picture,
-            'user_role': user.user_role
+            'user_role': user.user_role,
+            'id': user.id,
 
         }
 
