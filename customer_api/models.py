@@ -54,7 +54,7 @@ class Customer(models.Model):
 class ServiceOrder(models.Model):
     customer = models.ForeignKey(to=Customer, on_delete=models.CASCADE)
     salesperson = models.ForeignKey(to=Staff, on_delete=models.CASCADE)
-    order_date = models.DateField(auto_now_add=True)
+    order_date = models.DateField(auto_now=True)
     original_price = models.DecimalField(max_digits=8, decimal_places=2)
     discount = models.DecimalField(max_digits=8, decimal_places=2)
 
@@ -81,7 +81,7 @@ class CustomerLatePay(models.Model):
     salesperson = models.ForeignKey(to=Staff, related_name='late_pay_sp', on_delete=models.CASCADE,
                                     db_index=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
