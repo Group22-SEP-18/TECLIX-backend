@@ -7,25 +7,38 @@ from .models import SalespersonLocation, Leaderboard, LeaderboardPointSchema
 class SalespersonViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['id','email', 'employee_no', 'first_name', 'last_name', 'contact_no', 'profile_picture', 'is_approved', ]
+        fields = ['id', 'email', 'employee_no', 'first_name', 'last_name', 'contact_no', 'profile_picture',
+                  'is_approved', ]
+
 
 class CustomerLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['latitude', 'longitude', 'street', 'city', 'district']
 
+
 class LocationListViewSerializer(serializers.ModelSerializer):
     customer = CustomerLocationSerializer()
     salesperson = SalespersonViewSerializer()
+
     class Meta:
         model = SalespersonLocation
         fields = '__all__'
 
+
+class LeaderboardSalespersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['employee_no', 'first_name', 'last_name', 'profile_picture']
+
+
 class LeaderboardViewSerializer(serializers.ModelSerializer):
-    salesperson = SalespersonViewSerializer()
+    salesperson = LeaderboardSalespersonSerializer()
+
     class Meta:
         model = Leaderboard
-        fields = '__all__'
+        exclude = ['id']
+
 
 class LeaderboardPointSchemaViewSerializer(serializers.ModelSerializer):
     class Meta:

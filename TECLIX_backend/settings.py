@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'asset_api',
     'salesperson_api',
     'corsheaders',
+    'report_api',
 
 ]
 
