@@ -114,7 +114,7 @@ class LoginSalespersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture',
+        fields = ['id', 'employee_no', 'email', 'password', 'first_name', 'last_name', 'token', 'profile_picture',
                   'contact_no']
 
     def validate(self, attrs):
@@ -138,6 +138,7 @@ class LoginSalespersonSerializer(serializers.ModelSerializer):
             'token': user.token,
             'profile_picture': user.profile_picture,
             'contact_no': user.contact_no,
+            'id': user.id,
 
         }
 
