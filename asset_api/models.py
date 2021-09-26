@@ -8,7 +8,9 @@ from users.models import Staff
 class Product(models.Model):
     CATEGORY_OPTIONS = {
         ('biscuit', 'Biscuit'),
-        ('cake', 'Cake'),
+        ('chips', 'Chips'),
+        ('cookies', 'Cookies'),
+        ('cheese', 'Cheese'),
     }
     short_name = models.CharField(max_length=80)
     long_name = models.CharField(max_length=250)
@@ -25,9 +27,10 @@ class Vehicle(models.Model):
     VEHICLE_TYPES = {
         ('VAN', 'Van'),
         ('LORRY', 'Lorry'),
-        ('THREEWHEELER', 'threewheeler'),
-        ('CAB', 'cab'),
-        ('BIKE', 'bike'),
+        ('THREEWHEELER', 'Threewheeler'),
+        ('CAB', 'Cab'),
+        ('BIKE', 'Bike'),
+        ('BUS', 'Bus'),
     }
     vehicle_number = models.CharField(max_length=80)
     vehicle_type = models.CharField(choices=VEHICLE_TYPES, max_length=150)
