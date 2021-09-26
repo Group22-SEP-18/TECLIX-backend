@@ -1,12 +1,13 @@
 import datetime
 
 from rest_framework import generics, status
-from .serializers import GetMonthlySalesSerializer
+from rest_framework import permissions
 from customer_api.models import ServiceOrder
 from rest_framework.response import Response
 
 
 class GetMonthlySalespersonSalesView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, sp):
         so = ServiceOrder.objects.filter(order_date__month=datetime.date.today().month, salesperson=sp,
@@ -18,6 +19,7 @@ class GetMonthlySalespersonSalesView(generics.GenericAPIView):
 
 
 class GetTwoMonthComparisonSalesView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, sp):
         if datetime.date.today().month == 1:
