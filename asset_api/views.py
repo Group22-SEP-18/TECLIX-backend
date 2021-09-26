@@ -49,20 +49,11 @@ class VehicleView(RetrieveUpdateDestroyAPIView):
 class VehicleListView(ListAPIView):
     serializer_class = VehicleViewSerializer
 
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         vehicle = Vehicle.objects.all()
         return vehicle
-
-
-# class AssignVehicleProductsView(CreateAPIView):
-#     serializer_class = AssignVehicleProductSerializer
-#
-#     permission_classes = (IsAuthenticated, IsOfficer)
-#
-#     def perform_create(self, serializer):
-#         return serializer.save(assigned_by=self.request.user)
 
 
 class AssignVehicleItemsView(CreateAPIView):
@@ -81,3 +72,12 @@ class AssignedProductsListVehicleView(ListAPIView):
     # lookup_field = "id"
     def get_queryset(self):
         return VehicleSalesperson.objects.filter(salesperson=self.request.user)
+
+
+class AllAssignedProductsListVehicleView(ListAPIView):
+    serializer_class = SalespersonAssignedVehicleSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return VehicleSalesperson.objects.all()

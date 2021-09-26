@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product, Vehicle, VehicleProduct, VehicleSalesperson
+from users.serializers import SalespersonDetailSerializer
 
 
 # GET all products, Create a product POST
