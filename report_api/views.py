@@ -1,10 +1,14 @@
 import datetime
+import decimal
+
+from django.db.models.functions import Coalesce
+
 from .serializers import GetMonthlySalesSerializer
 from rest_framework import generics, status
 from rest_framework import permissions
 from customer_api.models import ServiceOrder, CustomerLatePay
 from rest_framework.response import Response
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 
 class GetMonthlySalespersonSalesView(generics.GenericAPIView):
@@ -32,3 +36,20 @@ class GetSalespersonMonthlySales(generics.GenericAPIView):
             sales=Sum('original_price')).order_by(
             'order_date__month')
         return Response(results, status=status.HTTP_200_OK)
+
+
+class GetDailyStatsView(generics.GenericAPIView):
+    serializer_class = GetMonthlySalesSerializer
+
+    def get(self, request, sp):
+        print(datetime.date.today().isoformat())
+        results = ServiceOrder.objects.filter(salesperson=sp, order_date__day=datetime.date.today().day,
+                                              order_date__month=datetime.date.today().month,
+                                              order_date__year=datetime.date.today().year).aggregate(
+            total_sales=Coalesce(Sum('original_price'), decimal.Decimal(0.0)), shops=Count('id'))
+        results2 = CustomerLatePay.objects.filter(salesperson=sp, date__day=datetime.date.today().day,
+                                                  date__month=datetime.date.today().month,
+                                                  date__year=datetime.date.today().year).aggregate(
+            pay_count=Count('id'))
+
+        return Response({**results, **results2}, status=status.HTTP_200_OK)
