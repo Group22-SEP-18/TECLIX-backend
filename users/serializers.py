@@ -176,4 +176,4 @@ class ApproveAccSerializer(serializers.ModelSerializer):
 class DOAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['employee_no', 'email', 'first_name', 'last_name', 'profile_picture', 'is_rejected', 'is_approved']
+        fields = ['id', 'employee_no', 'email', 'first_name', 'last_name', 'contact_no', 'profile_picture', 'is_rejected', 'is_approved']
