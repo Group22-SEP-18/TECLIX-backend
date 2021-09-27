@@ -12,6 +12,7 @@ class Product(models.Model):
     }
     short_name = models.CharField(max_length=80)
     long_name = models.CharField(max_length=250)
+    barcode = models.CharField(max_length=150, default='unknown', db_index=True, unique=True)
     product_image = models.ImageField(upload_to='product/', max_length=255, blank=True)
     category = models.CharField(choices=CATEGORY_OPTIONS, max_length=150)
     price = models.DecimalField(max_digits=7, decimal_places=2)
