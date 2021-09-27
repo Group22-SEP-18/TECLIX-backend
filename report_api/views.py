@@ -51,5 +51,7 @@ class GetDailyStatsView(generics.GenericAPIView):
                                                   date__month=datetime.date.today().month,
                                                   date__year=datetime.date.today().year).aggregate(
             pay_count=Count('id'))
+        
+        results['shops'] += results2['pay_count']
 
         return Response({**results, **results2}, status=status.HTTP_200_OK)
