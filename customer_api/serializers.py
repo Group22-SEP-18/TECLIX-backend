@@ -86,6 +86,10 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
             lb_object.points_current_month += points
             lb_object.points_all_time += points
             lb_object.save()
+            #     add outstanding to the customer
+            customer = Customer.objects.get(id=so.customer_id)
+            customer.outstanding += so.original_price
+            customer.save()
 
         else:
             schema = LeaderboardPointSchema.objects.get(points_type='SO_PAY')
