@@ -99,6 +99,10 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
             lb_object.points_current_month += points
             lb_object.points_all_time += points
             lb_object.save()
+            #     deduct loyalty points
+            customer = Customer.objects.get(id=so.customer_id)
+            customer.loyalty_points -= so.discount
+            customer.save()
 
         SalespersonLocation.objects.create(customer=so.customer, salesperson=so.salesperson)
         return so
