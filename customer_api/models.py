@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.dateformat import DateFormat
+
 from users.models import Staff
 from asset_api.models import Product
 
@@ -46,6 +48,7 @@ class Customer(models.Model):
     loyalty_points = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     outstanding = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
     created_by = models.ForeignKey(to=Staff, on_delete=models.SET_NULL, null=True)
+    created_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
