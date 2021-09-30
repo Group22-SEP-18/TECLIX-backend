@@ -6,13 +6,13 @@ from django.db.models.functions import Coalesce
 from .serializers import GetMonthlySalesSerializer
 from rest_framework import generics, status
 from rest_framework import permissions
-from customer_api.models import ServiceOrder, CustomerLatePay
+from customer_api.models import ServiceOrder, CustomerLatePay, Customer
 from rest_framework.response import Response
 from django.db.models import Sum, Count
 
 
 class GetMonthlySalespersonSalesView(generics.GenericAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = GetMonthlySalesSerializer
 
     def get(self, request, sp):
@@ -30,6 +30,7 @@ class GetMonthlySalespersonSalesView(generics.GenericAPIView):
 
 class GetSalespersonMonthlySales(generics.GenericAPIView):
     serializer_class = GetMonthlySalesSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, sp):
         results = ServiceOrder.objects.filter(salesperson=sp).values('order_date__month').annotate(
@@ -40,9 +41,9 @@ class GetSalespersonMonthlySales(generics.GenericAPIView):
 
 class GetDailyStatsView(generics.GenericAPIView):
     serializer_class = GetMonthlySalesSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, sp):
-        print(datetime.date.today().isoformat())
         results = ServiceOrder.objects.filter(salesperson=sp, order_date__day=datetime.date.today().day,
                                               order_date__month=datetime.date.today().month,
                                               order_date__year=datetime.date.today().year).aggregate(
@@ -51,7 +52,23 @@ class GetDailyStatsView(generics.GenericAPIView):
                                                   date__month=datetime.date.today().month,
                                                   date__year=datetime.date.today().year).aggregate(
             pay_count=Count('id'))
-        
+
         results['shops'] += results2['pay_count']
 
         return Response({**results, **results2}, status=status.HTTP_200_OK)
+
+
+class GetMonthlyComparison(generics.GenericAPIView):
+    serializer_class = GetMonthlySalesSerializer
+
+    def get(self, request, sp):
+        results = ServiceOrder.objects.filter(salesperson=sp, order_date__month=datetime.date.today().month,
+                                              order_date__year=datetime.date.today().year).aggregate(
+            so_count=Count('id'))
+        results2 = CustomerLatePay.objects.filter(salesperson=sp, date__month=datetime.date.today().month,
+                                                  date__year=datetime.date.today().year).aggregate(
+            pay_count=Count('id'))
+        result3 = Customer.objects.filter(created_by=sp, created_date__month=datetime.date.today().month,
+                                          created_date__year=datetime.date.today().year).aggregate(
+            customer_count=Count('id'))
+        return Response({**results, **results2, **result3}, status=status.HTTP_200_OK)
