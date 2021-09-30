@@ -29,7 +29,7 @@ class LocationListViewSerializer(serializers.ModelSerializer):
 class LeaderboardSalespersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['employee_no', 'first_name', 'last_name', 'profile_picture']
+        fields = ['id', 'employee_no', 'first_name', 'last_name', 'profile_picture']
 
 
 class LeaderboardViewSerializer(serializers.ModelSerializer):
