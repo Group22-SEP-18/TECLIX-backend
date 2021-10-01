@@ -154,7 +154,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Staff
-        fields = ['employee_no', 'email', 'first_name', 'last_name', 'token', 'profile_picture']
+        fields = ['employee_no', 'email', 'first_name', 'last_name', 'token', 'profile_picture', 'user_role']
 
 
 # this to specify what attrs required in the service order list
