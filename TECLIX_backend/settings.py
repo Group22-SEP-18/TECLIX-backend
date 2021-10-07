@@ -14,6 +14,8 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import django_heroku
+import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -105,7 +107,12 @@ WSGI_APPLICATION = 'TECLIX_backend.wsgi.application'
 DATABASES = {
     'default': dj_database_url.parse(config('DATABASE_URL'), engine='django.db.backends.postgresql',
                                      ssl_require=config('SSL_MODE', 'False') == 'True', conn_max_age=None),
+    'test': dj_database_url.parse(config('TEST_DATABASE_URL'), engine='django.db.backends.postgresql',
+                                  ssl_require=config('SSL_MODE', 'False') == 'True', conn_max_age=None),
 }
+
+if 'test' in sys.argv:
+    DATABASES['default'] = DATABASES['test']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
