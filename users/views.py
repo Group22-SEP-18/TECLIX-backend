@@ -14,6 +14,7 @@ from salesperson_api.models import Leaderboard
 # Create your views here.
 class RegisterStaffView(generics.GenericAPIView):
     serializer_class = RegisterStaffSerializer
+    renderer_classes = (UserRenderer,)
 
     def post(self, request):
         user = request.data
@@ -33,7 +34,7 @@ class RegisterStaffView(generics.GenericAPIView):
         if 'password' in user_data:
             del user_data['password']
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class LoginWebStaffView(generics.GenericAPIView):
