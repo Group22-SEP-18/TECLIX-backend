@@ -51,16 +51,15 @@ INSTALLED_APPS = [
     'salesperson_api',
     'corsheaders',
     'report_api',
-    'django_nose',
-
+    
 ]
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=users',
-
-]
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-package=users',
+#
+# ]
 
 AUTH_USER_MODEL = 'users.Staff'
 
