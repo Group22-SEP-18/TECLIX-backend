@@ -2,18 +2,21 @@ import pdb
 
 from .test_setup import TestSetUp
 from ..models import Staff
+from django.urls import reverse
 
 
 class TestView(TestSetUp):
     def approve_account(self, user_data):
         res1 = self.client.post(self.register_url, user_data, format='multipart')
         # approving account
-        user_email = email = res1.data['email']
-        user = Staff.objects.get(email=user_email)
+        # pdb.set_trace()
+        user = Staff.objects.get(email=res1.data['email'])
+        # pdb.set_trace()
         user.is_approved = True
         user.save()
+        return user
 
-    # resgister view related
+    # register view related
     def test_user_cannot_register_without_data(self):
         res = self.client.post(self.register_url)
         self.assertEqual(res.status_code, 400)
@@ -58,16 +61,16 @@ class TestView(TestSetUp):
         self.assertEqual(res.status_code, 400)
 
     def test_mobile_user_cannot_login_without_being_approved(self):
-        user = self.client.post(self.register_url, self.register_salesperson_data, format='multipart')
-        res = self.client.post(self.mobile_login_url, self.login_cred)
+        self.client.post(self.register_url, self.register_salesperson_data, format='multipart')
+        res = self.client.post(self.mobile_login_url, self.login_cred_sp)
         # pdb.set_trace()
 
         self.assertEqual(res.data['detail'], 'Your account is not approved.')
         self.assertEqual(res.status_code, 401)
 
     def test_web_user_cannot_login_without_being_approved(self):
-        user = self.client.post(self.register_url, self.register_officer_data, format='multipart')
-        res = self.client.post(self.mobile_login_url, self.login_cred)
+        self.client.post(self.register_url, self.register_officer_data, format='multipart')
+        res = self.client.post(self.mobile_login_url, self.login_cred_do)
         # pdb.set_trace()
 
         self.assertEqual(res.data['detail'], 'Your account is not approved.')
@@ -75,7 +78,7 @@ class TestView(TestSetUp):
 
     def test_mobile_user_can_login(self):
         self.approve_account(user_data=self.register_salesperson_data)
-        res = self.client.post(self.mobile_login_url, self.login_cred)
+        res = self.client.post(self.mobile_login_url, self.login_cred_sp)
         # pdb.set_trace()
 
         self.assertIsNotNone(res.data['token'])
@@ -83,7 +86,7 @@ class TestView(TestSetUp):
 
     def test_web_user_can_login(self):
         self.approve_account(user_data=self.register_manager_data)
-        res = self.client.post(self.web_login_url, self.login_cred)
+        res = self.client.post(self.web_login_url, self.login_cred_om)
         # pdb.set_trace()
 
         self.assertIsNotNone(res.data['token'])
@@ -91,7 +94,7 @@ class TestView(TestSetUp):
 
     def test_web_user_can_not_login_to_mobile_app(self):
         self.approve_account(user_data=self.register_manager_data)
-        res = self.client.post(self.mobile_login_url, self.login_cred)
+        res = self.client.post(self.mobile_login_url, self.login_cred_om)
         # pdb.set_trace()
 
         self.assertEqual(res.data['detail'], 'You are not authorized to use the application.')
@@ -99,7 +102,7 @@ class TestView(TestSetUp):
 
     def test_mobile_user_can_not_login_to_web_app(self):
         self.approve_account(user_data=self.register_salesperson_data)
-        res = self.client.post(self.web_login_url, self.login_cred)
+        res = self.client.post(self.web_login_url, self.login_cred_sp)
         # pdb.set_trace()
 
         self.assertEqual(res.data['detail'], 'You are not authorized to use the application.')
@@ -107,7 +110,7 @@ class TestView(TestSetUp):
 
     def test_mobile_user_auto_login_via_token(self):
         self.approve_account(user_data=self.register_salesperson_data)
-        res = self.client.post(self.mobile_login_url, self.login_cred)
+        res = self.client.post(self.mobile_login_url, self.login_cred_sp)
 
         token = res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
@@ -118,7 +121,7 @@ class TestView(TestSetUp):
 
     def test_web_user_auto_login_via_token(self):
         self.approve_account(user_data=self.register_manager_data)
-        res = self.client.post(self.web_login_url, self.login_cred)
+        res = self.client.post(self.web_login_url, self.login_cred_om)
 
         token = res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
@@ -129,7 +132,7 @@ class TestView(TestSetUp):
 
     def test_user_can_not_auto_login_once_logged_out(self):
         self.approve_account(user_data=self.register_manager_data)
-        res = self.client.post(self.web_login_url, self.login_cred)
+        self.client.post(self.web_login_url, self.login_cred_om)
 
         res = self.client.get(self.logged_user)
 
@@ -140,7 +143,7 @@ class TestView(TestSetUp):
 
     def test__user_can_not_auto_with_invalid_token(self):
         self.approve_account(user_data=self.register_manager_data)
-        res = self.client.post(self.web_login_url, self.login_cred)
+        self.client.post(self.web_login_url, self.login_cred_om)
 
         token = 'dummy-token'
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
@@ -150,3 +153,67 @@ class TestView(TestSetUp):
         self.assertEqual(res.data['detail'], 'Invalid token.')
 
         self.assertEqual(res.status_code, 401)
+
+    def test_officer_can_approve_salesperson_acc(self):
+        sp = self.approve_account(user_data=self.register_salesperson_data)
+
+        self.approve_account(user_data=self.register_officer_data)
+
+        login_res = self.client.post(self.web_login_url, self.login_cred_do)
+        approve_sp = reverse('approve-sp', kwargs={'id': sp.id})
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        res = self.client.post(approve_sp, {'is_approved': True}, **header, )
+
+        # pdb.set_trace()
+        self.assertTrue(res.data['is_approved'])
+
+        self.assertEqual(res.status_code, 201)
+
+    def test_officer_can_reject_salesperson_acc(self):
+        sp = self.approve_account(user_data=self.register_salesperson_data)
+
+        self.approve_account(user_data=self.register_officer_data)
+
+        login_res = self.client.post(self.web_login_url, self.login_cred_do)
+        approve_sp = reverse('approve-sp', kwargs={'id': sp.id})
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        res = self.client.post(approve_sp, {'is_approved': False}, **header, )
+
+        # pdb.set_trace()
+        self.assertFalse(res.data['is_approved'])
+
+        self.assertEqual(res.status_code, 201)
+
+    def test_manager_can_approve_officer_acc(self):
+        officer = self.approve_account(user_data=self.register_officer_data)
+
+        self.approve_account(user_data=self.register_manager_data)
+
+        login_res = self.client.post(self.web_login_url, self.login_cred_om)
+        approve_sp = reverse('approve-do', kwargs={'id': officer.id})
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        res = self.client.post(approve_sp, {'is_approved': True}, **header, )
+
+        # pdb.set_trace()
+        self.assertTrue(res.data['is_approved'])
+
+        self.assertEqual(res.status_code, 201)
+
+    def test_manager_can_reject_officer_acc(self):
+        officer = self.approve_account(user_data=self.register_officer_data)
+
+        self.approve_account(user_data=self.register_manager_data)
+
+        login_res = self.client.post(self.web_login_url, self.login_cred_om)
+        approve_sp = reverse('approve-do', kwargs={'id': officer.id})
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        res = self.client.post(approve_sp, {'is_approved': False}, **header, )
+
+        # pdb.set_trace()
+        self.assertFalse(res.data['is_approved'])
+
+        self.assertEqual(res.status_code, 201)

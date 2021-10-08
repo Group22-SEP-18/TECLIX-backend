@@ -1,7 +1,6 @@
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from faker import Faker
-import tempfile
 import io
 
 from PIL import Image
@@ -22,12 +21,13 @@ class TestSetUp(APITestCase):
         self.mobile_login_url = reverse('mobile-login')
         self.web_login_url = reverse('web-login')
         self.logged_user = reverse('staff-logged-user')
+
         self.faker = Faker()
 
         # login data
         self.register_salesperson_data = {
-            "email": 'test@gmail.com',
-            "employee_no": 'testid',
+            "email": 'test1@gmail.com',
+            "employee_no": 'testid1',
             "password": 'password',
             "user_role": 'SALESPERSON',
             "first_name": self.faker.first_name(),
@@ -36,8 +36,8 @@ class TestSetUp(APITestCase):
             "profile_picture": generate_photo_file(),
         }
         self.register_manager_data = {
-            "email": 'test@gmail.com',
-            "employee_no": 'testid',
+            "email": 'test3@gmail.com',
+            "employee_no": 'testid2',
             "password": 'password',
             "user_role": 'MANAGER',
             "first_name": self.faker.first_name(),
@@ -46,8 +46,8 @@ class TestSetUp(APITestCase):
             "profile_picture": generate_photo_file(),
         }
         self.register_officer_data = {
-            "email": 'test@gmail.com',
-            "employee_no": 'testid',
+            "email": 'test2@gmail.com',
+            "employee_no": 'testid3',
             "password": 'password',
             "user_role": 'OFFICER',
             "first_name": self.faker.first_name(),
@@ -56,8 +56,18 @@ class TestSetUp(APITestCase):
             "profile_picture": generate_photo_file(),
         }
 
-        self.login_cred = {
-            "email": 'test@gmail.com',
+        self.login_cred_sp = {
+            "email": 'test1@gmail.com',
+            "password": 'password',
+
+        }
+        self.login_cred_om = {
+            "email": 'test3@gmail.com',
+            "password": 'password',
+
+        }
+        self.login_cred_do = {
+            "email": 'test2@gmail.com',
             "password": 'password',
 
         }
