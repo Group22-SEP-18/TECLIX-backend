@@ -25,8 +25,6 @@ class RegisterStaffView(generics.GenericAPIView):
         user_data = serializer.data
 
         user = Staff.objects.get(email=user_data['email'])
-        if user.user_role == 'SALESPERSON':
-            Leaderboard.objects.create(salesperson=user)
 
         token = AuthToken.objects.create(user)[1]
 
@@ -72,12 +70,15 @@ class UpdateSalespersonAccStateView(generics.CreateAPIView):
     lookup_field = 'id'
 
     def perform_create(self, serializer):
-        do = Staff.objects.get(id=self.kwargs['id']);
+        sp = Staff.objects.get(id=self.kwargs['id']);
         print(self.kwargs['id'])
         if not self.request.data['is_approved']:
-            do.is_rejected = True
-        do.is_approved = self.request.data['is_approved']
-        return do.save()
+            sp.is_rejected = True
+        sp.is_approved = self.request.data['is_approved']
+        # create leaderboard entry
+        if self.request.data['is_approved']:
+            Leaderboard.objects.create(salesperson=sp)
+        return sp.save()
 
 
 class UpdateDistOfficerAccStateView(generics.CreateAPIView):
