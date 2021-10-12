@@ -3,6 +3,7 @@ from .models import Customer, ServiceOrder, OrderProduct, CustomerLatePay, Custo
 from users.serializers import SalespersonDetailSerializer
 from asset_api.serializers import SOProductDetailsSerializer
 from salesperson_api.models import LeaderboardPointSchema, Leaderboard, SalespersonLocation
+from asset_api.models import VehicleProduct, VehicleSalesperson
 import decimal
 
 
@@ -72,8 +73,22 @@ class CreateServiceOrderSerializer(serializers.ModelSerializer):
         # get payment type
         so_type = validated_data.pop('so_type')
         so = ServiceOrder.objects.create(**validated_data)
+
+        # get vehicle salesperson obj
+        v_sp = VehicleSalesperson.objects.get(salesperson=so.salesperson)
+
         for item in order_data:
+            vehicle_prod = VehicleProduct.objects.get(product=item['product'].id, vehicle_salesperson=v_sp)
+
+            if vehicle_prod.quantity < item['quantity']:
+                so.original_price -= item['quantity'] * item['price_at_the_time']
+                so.save()
+                raise serializers.ValidationError("Quantity requested is not in stocks.")
+
             OrderProduct.objects.create(order=so, **item)
+
+            vehicle_prod.quantity -= item['quantity']
+            vehicle_prod.save()
 
         #     get leaderboard obj
         lb_object = Leaderboard.objects.get(salesperson=so.salesperson)
