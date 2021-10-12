@@ -1,0 +1,7 @@
+[run]
+source=users/,
+omit=
+    teclixenv
+    */migrations/*
+    */test/*
+    */__init__.py
