@@ -21,6 +21,7 @@ class TestSetUp(APITestCase):
         self.mobile_login_url = reverse('mobile-login')
         self.web_login_url = reverse('web-login')
         self.logged_user = reverse('staff-logged-user')
+        self.pending_do = reverse('do-accounts')
 
         self.faker = Faker()
 
