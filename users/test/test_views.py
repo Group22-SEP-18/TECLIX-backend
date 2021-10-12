@@ -203,17 +203,30 @@ class TestView(TestSetUp):
         self.assertEqual(res.status_code, 201)
 
     def test_manager_can_reject_officer_acc(self):
-        officer = self.approve_account(user_data=self.register_officer_data)
+        res1 = self.client.post(self.register_url, self.register_officer_data, format='multipart')
+        officer = Staff.objects.get(email=res1.data['email'])
 
-        self.approve_account(user_data=self.register_manager_data)
+        manager = self.approve_account(user_data=self.register_manager_data)
 
         login_res = self.client.post(self.web_login_url, self.login_cred_om)
-        approve_sp = reverse('approve-do', kwargs={'id': officer.id})
+        approve_do = reverse('approve-do', kwargs={'id': officer.id})
         token = login_res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
-        res = self.client.post(approve_sp, {'is_approved': False}, **header, )
+        res = self.client.post(approve_do, {'is_approved': False}, **header, )
 
-        # pdb.set_trace()
         self.assertFalse(res.data['is_approved'])
-
+        self.assertFalse(officer.is_rejected)
         self.assertEqual(res.status_code, 201)
+
+    def test_get_pending_DO_accounts(self):
+        officer = self.approve_account(user_data=self.register_officer_data)
+        manager = self.approve_account(user_data=self.register_manager_data)
+
+        login_res = self.client.post(self.web_login_url, self.login_cred_om)
+
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+
+        res = self.client.get(self.pending_do, **header, )
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]['email'], officer.email)
