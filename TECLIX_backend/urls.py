@@ -36,11 +36,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('staff-api/', include('users.urls')),
-                  path('customer-api/', include('customer_api.urls')),
-                  path('asset-api/', include('asset_api.urls')),
-                  path('salesperson-api/', include('salesperson_api.urls')),
-                  path('report-api/', include('report_api.urls')),
+                  path('staff-api/', include('users.urls', namespace='staff')),
+                  path('customer-api/', include('customer_api.urls', namespace='customer')),
+                  path('asset-api/', include('asset_api.urls', namespace='asset')),
+                  path('salesperson-api/', include('salesperson_api.urls', namespace='salesperson')),
+                  path('report-api/', include('report_api.urls', namespace='report')),
                   path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
                   path('api/api.json/', schema_view.without_ui(cache_timeout=0), name='schema-swagger-ui'),
                   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

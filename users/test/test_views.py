@@ -160,7 +160,7 @@ class TestView(TestSetUp):
         self.approve_account(user_data=self.register_officer_data)
 
         login_res = self.client.post(self.web_login_url, self.login_cred_do)
-        approve_sp = reverse('approve-sp', kwargs={'id': sp.id})
+        approve_sp = reverse('staff:approve-sp', kwargs={'id': sp.id})
         token = login_res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         res = self.client.post(approve_sp, {'is_approved': True}, **header, )
@@ -176,7 +176,7 @@ class TestView(TestSetUp):
         self.approve_account(user_data=self.register_officer_data)
 
         login_res = self.client.post(self.web_login_url, self.login_cred_do)
-        approve_sp = reverse('approve-sp', kwargs={'id': sp.id})
+        approve_sp = reverse('staff:approve-sp', kwargs={'id': sp.id})
         token = login_res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         res = self.client.post(approve_sp, {'is_approved': False}, **header, )
@@ -192,7 +192,7 @@ class TestView(TestSetUp):
         self.approve_account(user_data=self.register_manager_data)
 
         login_res = self.client.post(self.web_login_url, self.login_cred_om)
-        approve_sp = reverse('approve-do', kwargs={'id': officer.id})
+        approve_sp = reverse('staff:approve-do', kwargs={'id': officer.id})
         token = login_res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         res = self.client.post(approve_sp, {'is_approved': True}, **header, )
@@ -209,7 +209,7 @@ class TestView(TestSetUp):
         manager = self.approve_account(user_data=self.register_manager_data)
 
         login_res = self.client.post(self.web_login_url, self.login_cred_om)
-        approve_do = reverse('approve-do', kwargs={'id': officer.id})
+        approve_do = reverse('staff:approve-do', kwargs={'id': officer.id})
         token = login_res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         res = self.client.post(approve_do, {'is_approved': False}, **header, )

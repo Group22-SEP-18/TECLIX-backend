@@ -1,5 +1,8 @@
-from .views import SalespersonListView, SalespersonView, LocationListView, CurrentLocationListView, SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView, LeaderboardPointSchemaView
+from .views import SalespersonListView, SalespersonView, LocationListView, CurrentLocationListView, \
+    SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView, LeaderboardPointSchemaView
 from django.urls import path
+
+app_name = 'salesperson'
 
 urlpatterns = [
     path('', SalespersonListView.as_view(), name='all-salespersons'),

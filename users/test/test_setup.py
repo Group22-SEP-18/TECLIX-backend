@@ -17,11 +17,11 @@ def generate_photo_file():
 
 class TestSetUp(APITestCase):
     def setUp(self):
-        self.register_url = reverse('staff-register')
-        self.mobile_login_url = reverse('mobile-login')
-        self.web_login_url = reverse('web-login')
-        self.logged_user = reverse('staff-logged-user')
-        self.pending_do = reverse('do-accounts')
+        self.register_url = reverse('staff:staff-register')
+        self.mobile_login_url = reverse('staff:mobile-login')
+        self.web_login_url = reverse('staff:web-login')
+        self.logged_user = reverse('staff:staff-logged-user')
+        self.pending_do = reverse('staff:do-accounts')
 
         self.faker = Faker()
 
