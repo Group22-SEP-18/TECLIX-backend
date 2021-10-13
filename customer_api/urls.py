@@ -3,6 +3,8 @@ from .views import CustomerListView, CustomerView, ServiceOrderListView, Service
     CreateLoyaltyPointsView, DeleteLoyaltyPointsView
 from django.urls import path
 
+app_name = 'customer'
+
 urlpatterns = [
     path('', CustomerListView.as_view(), name='all-customers'),
     path('<int:id>', CustomerView.as_view(), name='single-customer'),

@@ -2,6 +2,8 @@ from .views import ProductListView, ProductView, VehicleCreateView, VehicleView,
     AssignVehicleItemsView, AssignedProductsListVehicleView, AllAssignedProductsListVehicleView
 from django.urls import path
 
+app_name = 'asset'
+
 urlpatterns = [
     path('products/', ProductListView.as_view(), name='all-products'),
     path('products/<int:id>', ProductView.as_view(), name='single-product'),

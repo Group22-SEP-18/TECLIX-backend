@@ -3,6 +3,8 @@ from knox import views as knox_views
 from .views import RegisterStaffView, LoginWebStaffView, GetLoggedUserFromToken, UpdateSalespersonAccStateView, \
     UpdateDistOfficerAccStateView, LoginSalespersonStaffView, GetDOAccountsView
 
+app_name = 'staff'
+
 urlpatterns = [
     path('register/', RegisterStaffView.as_view(), name='staff-register'),
     path('login/web', LoginWebStaffView.as_view(), name='web-login'),
