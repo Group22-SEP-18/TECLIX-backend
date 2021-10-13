@@ -20,3 +20,17 @@ To reset the database.
 ```bash
 $ python manage.py reset_db 
 ```
+### Testing
+
+To run tests
+```bash
+$ coverage run manage.py test 
+```
+To genarate test report
+```bash
+$ coverage report 
+```
+To genarate test report in HTML format
+```bash
+$ coverage html 
+```
