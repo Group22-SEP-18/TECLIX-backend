@@ -3,6 +3,7 @@ from django.urls import reverse
 from faker import Faker
 import io
 from salesperson_api.models import LeaderboardPointSchema
+from asset_api.models import Product
 from PIL import Image
 
 
@@ -23,6 +24,14 @@ class TestSetUp(APITestCase):
         self.customer_base_url = reverse('customer:all-customers')
         self.sp_register = reverse('staff:staff-register')
         self.sp_login = reverse('staff:mobile-login')
+        self.get_all_so = reverse('customer:all-so')
+        self.create_so = reverse('customer:create-so')
+
+        # quires
+
+        LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
+        Product.objects.create(short_name=self.faker.first_name(), long_name=self.faker.first_name(), barcode='test123',
+                               category="cookies", price='20.00')
 
         # salesperson data data
         self.salesperson_data = {
@@ -56,7 +65,14 @@ class TestSetUp(APITestCase):
             "outstanding": "0.00",
         }
 
-        LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
+        self.so_data = {
+            "order_items": [],
+            "so_type": "later",
+            "original_price": "1250",
+            "discount": "100.00",
+            "customer": 1
+        }
+
         return super().setUp()
 
     def tearDown(self):

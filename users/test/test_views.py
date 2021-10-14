@@ -5,7 +5,7 @@ from ..models import Staff
 from django.urls import reverse
 
 
-class TestView(TestSetUp):
+class TestStaffView(TestSetUp):
     def approve_account(self, user_data):
         res1 = self.client.post(self.register_url, user_data, format='multipart')
         # approving account
