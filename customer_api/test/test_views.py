@@ -1,10 +1,11 @@
 import datetime
+import json
 import pdb
 
 from .test_setup import TestSetUp
 from users.models import Staff
 from customer_api.models import Customer, ServiceOrder, CustomerLatePay, CustomerLoyaltyPointScheme
-from asset_api.models import Product
+from asset_api.models import Product, VehicleSalesperson, Vehicle, VehicleProduct
 from django.urls import reverse
 from salesperson_api.models import Leaderboard
 
@@ -23,6 +24,19 @@ class TestCustomerView(TestSetUp):
         token = res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         return header
+
+    def create_so_related_objs(self):
+        sp = Staff.objects.get(email='test1@gmail.com')
+        customer = self.return_customer_obj()
+        product = Product.objects.create(short_name=self.faker.first_name(), long_name=self.faker.first_name(),
+                                         barcode='test123',
+                                         category="cookies", price='20.00')
+        self.vehicle_data['created_by'] = sp
+        vehicle = Vehicle.objects.create(**self.vehicle_data)
+        vsp = VehicleSalesperson.objects.create(vehicle=vehicle, salesperson=sp, assigned_by=sp)
+        VehicleProduct.objects.create(vehicle_salesperson=vsp, product=product, quantity=10)
+
+        return [product, customer, sp]
 
     def generate_manager_request_header(self):
         res1 = self.client.post(self.sp_register, self.manager_data, format='multipart')
@@ -99,29 +113,70 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.data[0]['order_items'], [])
         self.assertEqual(res.status_code, 200)
 
-    # def test_create_so(self):
-    #     header = self.generate_sp_request_header()
-    #     customer = self.return_customer_obj()
-    #     self.client.post(self.customer_base_url, self.customer_data, **header)
-    #     product = Product.objects.create(short_name=self.faker.first_name(), long_name=self.faker.first_name(),
-    #                                      barcode='test123',
-    #                                      category="cookies", price='20.00')
-    #     self.so_data = {
-    #         "order_items": [
-    #             {
-    #                 "quantity": 5,
-    #                 "price_at_the_time": "120.00",
-    #                 "product": product.id
-    #             },
-    #         ],
-    #         "so_type": "later",
-    #         "original_price": "1250",
-    #         "discount": "100.00",
-    #         "customer": customer.id
-    #     }
-    #
-    #     res = self.client.post(self.create_so, self.so_data, **header)
-    #     pdb.set_trace()
+    def test_create_so_now(self):
+        header = self.generate_sp_request_header()
+        product, customer, sp = self.create_so_related_objs()
+
+        self.so_data = {
+            "order_items": [
+                {
+                    "quantity": 5,
+                    "price_at_the_time": "120.00",
+                    "product": product.id
+                },
+            ],
+            "so_type": "later",
+            "original_price": "1250.00",
+            "discount": "100.00",
+            "customer": customer.id
+        }
+
+        res = self.client.post(self.create_so, json.dumps(self.so_data), **header, content_type='application/json')
+        self.assertEqual(res.data['customer'], customer.id)
+        self.assertEqual(res.data['original_price'], self.so_data['original_price'])
+        self.assertEqual(res.status_code, 201)
+
+    def test_create_so_later(self):
+        header = self.generate_sp_request_header()
+        product, customer, sp = self.create_so_related_objs()
+        self.so_data = {
+            "order_items": [
+                {
+                    "quantity": 5,
+                    "price_at_the_time": "120.00",
+                    "product": product.id
+                },
+            ],
+            "so_type": "now",
+            "original_price": "1250.00",
+            "discount": "100.00",
+            "customer": customer.id
+        }
+
+        res = self.client.post(self.create_so, json.dumps(self.so_data), **header, content_type='application/json')
+        self.assertEqual(res.data['customer'], customer.id)
+        self.assertEqual(res.data['original_price'], self.so_data['original_price'])
+        self.assertEqual(res.status_code, 201)
+
+    def test_create_so_will_reject_products_with_quantity_more_than_actual_stocks(self):
+        header = self.generate_sp_request_header()
+        product, customer, sp = self.create_so_related_objs()
+        self.so_data = {
+            "order_items": [
+                {
+                    "quantity": 12,
+                    "price_at_the_time": "120.00",
+                    "product": product.id
+                },
+            ],
+            "so_type": "now",
+            "original_price": "1250.00",
+            "discount": "100.00",
+            "customer": customer.id
+        }
+        res = self.client.post(self.create_so, json.dumps(self.so_data), **header, content_type='application/json')
+        self.assertEqual(res.data[0], 'Quantity requested is not in stocks.')
+        self.assertEqual(res.status_code, 400)
 
     def test_get_so_given_id(self):
         header = self.generate_sp_request_header()

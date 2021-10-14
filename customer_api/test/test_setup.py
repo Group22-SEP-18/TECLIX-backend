@@ -35,6 +35,8 @@ class TestSetUp(APITestCase):
 
         LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
         LeaderboardPointSchema.objects.create(points_type='LATE_PAYMENTS', bonus_points=0.0, percentage=10)
+        LeaderboardPointSchema.objects.create(points_type='SO_PAY_LATER', bonus_points=0.0, percentage=10)
+        LeaderboardPointSchema.objects.create(points_type='SO_PAY', bonus_points=0.0, percentage=10)
 
         # salesperson data data
         self.salesperson_data = {
@@ -87,6 +89,13 @@ class TestSetUp(APITestCase):
             "minimum_amount": "100.00",
             "max_amount": "200.00",
             "point_percentage": 15
+        }
+        self.vehicle_data = {
+            "vehicle_number": "test123",
+            "vehicle_type": "BIKE",
+            "vehicle_model": "model1",
+            "vehicle_image": 'testimage',
+            "created_by": ''
         }
 
         return super().setUp()
