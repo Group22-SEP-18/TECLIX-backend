@@ -61,6 +61,13 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.data['email'], self.customer_data['email'])
         self.assertEqual(res.status_code, 201)
 
+    def test_create_customer_account_contact_no_must_contain_10_digits(self):
+        header = self.generate_sp_request_header()
+        self.customer_data['contact_no'] = '123456'
+        res = self.client.post(self.customer_base_url, self.customer_data, **header)
+        self.assertEqual(res.data['non_field_errors'][0], 'The contact number is invalid')
+        self.assertEqual(res.status_code, 400)
+
     def test_get_all_customer_accounts(self):
         header = self.generate_sp_request_header()
         Customer.objects.create(**self.customer_data)
