@@ -3,6 +3,7 @@ from django.urls import reverse
 from faker import Faker
 import io
 from salesperson_api.models import LeaderboardPointSchema
+from asset_api.models import Product
 from PIL import Image
 
 
@@ -23,6 +24,19 @@ class TestSetUp(APITestCase):
         self.customer_base_url = reverse('customer:all-customers')
         self.sp_register = reverse('staff:staff-register')
         self.sp_login = reverse('staff:mobile-login')
+        self.web_login = reverse('staff:web-login')
+        self.get_all_so = reverse('customer:all-so')
+        self.create_so = reverse('customer:create-so')
+        self.get_all_lp = reverse('customer:all-late-pay')
+        self.create_lp = reverse('customer:add-late-pay')
+        self.create_loyalty_points = reverse('customer:create-loyalty-points')
+
+        # quires
+
+        LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
+        LeaderboardPointSchema.objects.create(points_type='LATE_PAYMENTS', bonus_points=0.0, percentage=10)
+        LeaderboardPointSchema.objects.create(points_type='SO_PAY_LATER', bonus_points=0.0, percentage=10)
+        LeaderboardPointSchema.objects.create(points_type='SO_PAY', bonus_points=0.0, percentage=10)
 
         # salesperson data data
         self.salesperson_data = {
@@ -35,8 +49,23 @@ class TestSetUp(APITestCase):
             "contact_no": '1234567890',
             "profile_picture": generate_photo_file(),
         }
-        self.login_cred = {
+        self.manager_data = {
+            "email": 'test3@gmail.com',
+            "employee_no": 'testid2',
+            "password": 'password',
+            "user_role": 'MANAGER',
+            "first_name": self.faker.first_name(),
+            "last_name": self.faker.last_name(),
+            "contact_no": '1234567890',
+            "profile_picture": generate_photo_file(),
+        }
+        self.login_cred_sp = {
             "email": 'test1@gmail.com',
+            "password": 'password',
+
+        }
+        self.login_cred_om = {
+            "email": 'test3@gmail.com',
             "password": 'password',
 
         }
@@ -56,7 +85,19 @@ class TestSetUp(APITestCase):
             "outstanding": "0.00",
         }
 
-        LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
+        self.loyalty_data = {
+            "minimum_amount": "100.00",
+            "max_amount": "200.00",
+            "point_percentage": 15
+        }
+        self.vehicle_data = {
+            "vehicle_number": "test123",
+            "vehicle_type": "BIKE",
+            "vehicle_model": "model1",
+            "vehicle_image": 'testimage',
+            "created_by": ''
+        }
+
         return super().setUp()
 
     def tearDown(self):

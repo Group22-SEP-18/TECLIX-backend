@@ -27,8 +27,6 @@ class RegisterStaffSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("the contact number should only contain numbers.")
         if not len(contact_no) == 10:
             raise serializers.ValidationError("the contact number must be 10 digits long.")
-        if not contact_no.isalnum():
-            raise serializers.ValidationError("the contact number should only contain  alpha numeric characters.")
         return attrs
 
     def create(self, validated_data):
@@ -176,4 +174,5 @@ class ApproveAccSerializer(serializers.ModelSerializer):
 class DOAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['id', 'employee_no', 'email', 'first_name', 'last_name', 'contact_no', 'profile_picture', 'is_rejected', 'is_approved']
+        fields = ['id', 'employee_no', 'email', 'first_name', 'last_name', 'contact_no', 'profile_picture',
+                  'is_rejected', 'is_approved']
