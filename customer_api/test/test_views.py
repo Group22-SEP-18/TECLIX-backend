@@ -1,15 +1,17 @@
+import datetime
 import pdb
 
 from .test_setup import TestSetUp
 from users.models import Staff
-from customer_api.models import Customer, ServiceOrder
+from customer_api.models import Customer, ServiceOrder, CustomerLatePay, CustomerLoyaltyPointScheme
+from asset_api.models import Product
 from django.urls import reverse
 from salesperson_api.models import Leaderboard
 
 
 class TestCustomerView(TestSetUp):
 
-    def generate_request_header(self):
+    def generate_sp_request_header(self):
         res1 = self.client.post(self.sp_register, self.salesperson_data, format='multipart')
         user = Staff.objects.get(email=res1.data['email'])
         user.is_approved = True
@@ -17,7 +19,18 @@ class TestCustomerView(TestSetUp):
         Leaderboard.objects.create(salesperson=user)
 
         #     login
-        res = self.client.post(self.sp_login, self.login_cred)
+        res = self.client.post(self.sp_login, self.login_cred_sp)
+        token = res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+        return header
+
+    def generate_manager_request_header(self):
+        res1 = self.client.post(self.sp_register, self.manager_data, format='multipart')
+        user = Staff.objects.get(email=res1.data['email'])
+        user.is_approved = True
+        user.save()
+
+        res = self.client.post(self.web_login, self.login_cred_om)
         token = res.data['token']
         header = {'HTTP_AUTHORIZATION': 'Token ' + token}
         return header
@@ -28,14 +41,14 @@ class TestCustomerView(TestSetUp):
         return customer
 
     def test_create_customer_account(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
         res = self.client.post(self.customer_base_url, self.customer_data, **header)
         self.assertEqual(res.data['shop_name'], self.customer_data['shop_name'])
         self.assertEqual(res.data['email'], self.customer_data['email'])
         self.assertEqual(res.status_code, 201)
 
     def test_get_all_customer_accounts(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
         Customer.objects.create(**self.customer_data)
         res = self.client.get(self.customer_base_url, **header)
 
@@ -45,7 +58,7 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     def test_get_customer(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
         customer = self.return_customer_obj()
 
         self.get_customer_url = reverse('customer:single-customer', kwargs={'id': customer.id})
@@ -57,7 +70,7 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     def test_return_customer_search_results(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
         customer = self.return_customer_obj()
         self.search_customer = reverse('customer:search-customer')
         res = self.client.get(self.search_customer + '?search=' + customer.shop_name, **header)
@@ -66,7 +79,7 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     def test_return_empty_search_results(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
 
         self.search_customer = reverse('customer:search-customer')
         res = self.client.get(self.search_customer + '?search=' + 'test', **header)
@@ -74,7 +87,7 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     def test_get_all_so(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
 
         sp = Staff.objects.get(email='test1@gmail.com')
         customer = self.return_customer_obj()
@@ -87,14 +100,31 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     # def test_create_so(self):
-    #     header = self.generate_request_header()
+    #     header = self.generate_sp_request_header()
+    #     customer = self.return_customer_obj()
     #     self.client.post(self.customer_base_url, self.customer_data, **header)
-    # 
+    #     product = Product.objects.create(short_name=self.faker.first_name(), long_name=self.faker.first_name(),
+    #                                      barcode='test123',
+    #                                      category="cookies", price='20.00')
+    #     self.so_data = {
+    #         "order_items": [
+    #             {
+    #                 "quantity": 5,
+    #                 "price_at_the_time": "120.00",
+    #                 "product": product.id
+    #             },
+    #         ],
+    #         "so_type": "later",
+    #         "original_price": "1250",
+    #         "discount": "100.00",
+    #         "customer": customer.id
+    #     }
+    #
     #     res = self.client.post(self.create_so, self.so_data, **header)
     #     pdb.set_trace()
 
     def test_get_so_given_id(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
 
         sp = Staff.objects.get(email='test1@gmail.com')
         customer = self.return_customer_obj()
@@ -108,7 +138,7 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.status_code, 200)
 
     def test_get_all_so_given_customer(self):
-        header = self.generate_request_header()
+        header = self.generate_sp_request_header()
 
         sp = Staff.objects.get(email='test1@gmail.com')
         customer = self.return_customer_obj()
@@ -120,3 +150,56 @@ class TestCustomerView(TestSetUp):
         self.assertEqual(res.data[0]['customer']['shop_name'], customer.shop_name)
         self.assertEqual(res.data[0]['order_items'], [])
         self.assertEqual(res.status_code, 200)
+
+    def test_get_all_late_payments(self):
+        header = self.generate_sp_request_header()
+        sp = Staff.objects.get(email='test1@gmail.com')
+        customer = self.return_customer_obj()
+
+        CustomerLatePay.objects.create(customer=customer, salesperson=sp, amount="0.00")
+        res = self.client.get(self.get_all_lp, **header)
+        # pdb.set_trace()
+
+        self.assertEqual(res.data[0]['customer']['shop_name'], customer.shop_name)
+        self.assertEqual(res.data[0]['date'], datetime.date.today().isoformat())
+        self.assertEqual(res.status_code, 200)
+
+    def test_create_late_pay(self):
+        header = self.generate_sp_request_header()
+        customer = self.return_customer_obj()
+
+        res = self.client.post(self.create_lp, {'customer': customer, 'amount': '100.00'}, **header)
+        self.assertEqual(res.data['customer'], customer.id)
+        self.assertEqual(res.data['date'], datetime.date.today().isoformat())
+        self.assertEqual(res.status_code, 201)
+
+    def test_get_all_late_pay_given_customer(self):
+        header = self.generate_sp_request_header()
+        sp = Staff.objects.get(email='test1@gmail.com')
+        customer = self.return_customer_obj()
+
+        CustomerLatePay.objects.create(customer=customer, salesperson=sp, amount="0.00")
+
+        self.get_lp_per_cus = reverse('customer:per-customer-late-pay', kwargs={'id': customer.id})
+        res = self.client.get(self.get_lp_per_cus, **header)
+
+        self.assertEqual(res.data[0]['salesperson']['employee_no'], sp.employee_no)
+        self.assertEqual(res.data[0]['customer'], customer.id)
+        self.assertEqual(res.data[0]['date'], datetime.date.today().isoformat())
+        self.assertEqual(res.status_code, 200)
+
+    def test_create_loyalty_point_option(self):
+        header = self.generate_manager_request_header()
+
+        res = self.client.post(self.create_loyalty_points, self.loyalty_data, **header)
+
+        self.assertEqual(res.data['minimum_amount'], self.loyalty_data['minimum_amount'])
+        self.assertEqual(res.status_code, 201)
+
+    def test_delete_loyalty_point_option(self):
+        header = self.generate_manager_request_header()
+        schema = CustomerLoyaltyPointScheme.objects.create(**self.loyalty_data)
+        self.delete_loyalty = reverse('customer:delete-loyalty-points', kwargs={'pk': schema.id})
+        res = self.client.delete(self.delete_loyalty, **header)
+
+        self.assertEqual(res.status_code, 204)

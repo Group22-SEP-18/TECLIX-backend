@@ -24,14 +24,17 @@ class TestSetUp(APITestCase):
         self.customer_base_url = reverse('customer:all-customers')
         self.sp_register = reverse('staff:staff-register')
         self.sp_login = reverse('staff:mobile-login')
+        self.web_login = reverse('staff:web-login')
         self.get_all_so = reverse('customer:all-so')
         self.create_so = reverse('customer:create-so')
+        self.get_all_lp = reverse('customer:all-late-pay')
+        self.create_lp = reverse('customer:add-late-pay')
+        self.create_loyalty_points = reverse('customer:create-loyalty-points')
 
         # quires
 
         LeaderboardPointSchema.objects.create(points_type='CUSTOMER_CREATION', bonus_points=0.0, percentage=10)
-        Product.objects.create(short_name=self.faker.first_name(), long_name=self.faker.first_name(), barcode='test123',
-                               category="cookies", price='20.00')
+        LeaderboardPointSchema.objects.create(points_type='LATE_PAYMENTS', bonus_points=0.0, percentage=10)
 
         # salesperson data data
         self.salesperson_data = {
@@ -44,8 +47,23 @@ class TestSetUp(APITestCase):
             "contact_no": '1234567890',
             "profile_picture": generate_photo_file(),
         }
-        self.login_cred = {
+        self.manager_data = {
+            "email": 'test3@gmail.com',
+            "employee_no": 'testid2',
+            "password": 'password',
+            "user_role": 'MANAGER',
+            "first_name": self.faker.first_name(),
+            "last_name": self.faker.last_name(),
+            "contact_no": '1234567890',
+            "profile_picture": generate_photo_file(),
+        }
+        self.login_cred_sp = {
             "email": 'test1@gmail.com',
+            "password": 'password',
+
+        }
+        self.login_cred_om = {
+            "email": 'test3@gmail.com',
             "password": 'password',
 
         }
@@ -65,12 +83,10 @@ class TestSetUp(APITestCase):
             "outstanding": "0.00",
         }
 
-        self.so_data = {
-            "order_items": [],
-            "so_type": "later",
-            "original_price": "1250",
-            "discount": "100.00",
-            "customer": 1
+        self.loyalty_data = {
+            "minimum_amount": "100.00",
+            "max_amount": "200.00",
+            "point_percentage": 15
         }
 
         return super().setUp()
