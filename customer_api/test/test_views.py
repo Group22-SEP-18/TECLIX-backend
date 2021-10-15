@@ -50,8 +50,7 @@ class TestCustomerView(TestSetUp):
         return header
 
     def return_customer_obj(self):
-        Customer.objects.create(**self.customer_data)
-        customer = Customer.objects.get(email=self.customer_data['email'])
+        customer = Customer.objects.create(**self.customer_data)
         return customer
 
     def test_create_customer_account(self):
