@@ -1,5 +1,5 @@
 import pdb
-
+import json
 from .test_setup import TestSetUp
 from ..models import Staff
 from django.urls import reverse
@@ -16,18 +16,18 @@ class TestView(TestSetUp):
         user.save()
         return user
 
-    # def vehicle_products_salesperson(self, products_id, salesperson_id, quantity, vehicle_id):
-    #     assign_products_salesperson = {
-    #         "assigned_vehicle": [
-    #                                 {
-    #                                     "quantity": quantity,
-    #                                     "product": products_id
-    #                                 }
-    #                             ],
-    #         "vehicle": vehicle_id,
-    #         "salesperson": salesperson_id
-    #     }
-    #     return(assign_products_salesperson)
+    def vehicle_products_salesperson(self, products_id, salesperson_id, quantity, vehicle_id):
+        assign_products_salesperson = {
+            "assigned_vehicle": [
+                                    {
+                                        "quantity": quantity,
+                                        "product": products_id
+                                    }
+                                ],
+            "vehicle": vehicle_id,
+            "salesperson": salesperson_id
+        }
+        return(assign_products_salesperson)
 
     def test_do_can_register_products(self):
         self.approve_account(user_data=self.register_officer_data)
@@ -65,19 +65,32 @@ class TestView(TestSetUp):
         vehicle = self.client.post(self.register_vehicle_url, self.register_vehicle_data, **header, format='multipart')
         salesperson = self.approve_account(user_data=self.register_salesperson_data)
 
-        # assignments = self.vehicle_products_salesperson(vehicle_id = vehicle.data['id'],products_id = product.data['id'], salesperson_id = salesperson.id, quantity = 3)
-        print(product.data['id'])
-        print(vehicle.data['id'])
-        print(salesperson.id)
-        print(self.assign_products_salesperson)
-        res = self.client.post(self.assign_vehicle, self.assign_products_salesperson, **header, )
-        pdb.set_trace()
-        # print(res.data)
+        assignments = self.vehicle_products_salesperson(vehicle_id = vehicle.data['id'],products_id = product.data['id'], salesperson_id = salesperson.id, quantity = 3)
+        res = self.client.post(self.assign_vehicle, json.dumps(assignments), **header, content_type='application/json')
+        # pdb.set_trace()
+        self.assertEqual(res.data['vehicle'], assignments['vehicle'])
+        self.assertEqual(res.status_code, 201)
+        
+    def test_get_all_assigned_vehicles(self):
+        officer = self.approve_account(user_data=self.register_officer_data)
+        login_res = self.client.post(self.web_login_url, self.login_cred_do)
+        token = login_res.data['token']
+        header = {'HTTP_AUTHORIZATION': 'Token ' + token}
+
+        product = self.client.post(self.register_product_url, self.register_product_data, **header, format='multipart')
+        vehicle = self.client.post(self.register_vehicle_url, self.register_vehicle_data, **header, format='multipart')
+        salesperson = self.approve_account(user_data=self.register_salesperson_data)
+
+        assignments = self.vehicle_products_salesperson(vehicle_id = vehicle.data['id'],products_id = product.data['id'], salesperson_id = salesperson.id, quantity = 3)
+        self.client.post(self.assign_vehicle, json.dumps(assignments), **header, content_type='application/json')
+
+        res = self.client.get(self.get_assigned_vehicles, **header, )
+        self.assertEqual(res.data[0]['vehicle']['vehicle_number'], self.register_vehicle_data['vehicle_number'])
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(res.data), 1)
+        # pdb.set_trace()
 
 
-
-    
-    # def test_get_all_assigned_vehicles(self):
         
 
 

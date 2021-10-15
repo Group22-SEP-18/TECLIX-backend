@@ -26,6 +26,7 @@ class TestSetUp(APITestCase):
         self.register_vehicle_url = reverse('asset:create-vehicle')
         self.get_all_vehicles = reverse('asset:all-vehicles')
         self.assign_vehicle = reverse('asset:assign-vehicle-items')
+        self.get_assigned_vehicles = reverse('asset:all-vehicle-items')
         self.faker = Faker()
 
         # login data
