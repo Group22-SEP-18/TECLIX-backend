@@ -5,7 +5,7 @@ from ..models import Staff
 from django.urls import reverse
 
 
-class TestView(TestSetUp):
+class TestStaffView(TestSetUp):
     def approve_account(self, user_data):
         res1 = self.client.post(self.register_url, user_data, format='multipart')
         # approving account
@@ -48,11 +48,25 @@ class TestView(TestSetUp):
         self.assertEqual(res.data['non_field_errors'][0], 'the contact number must be 10 digits long.')
         self.assertEqual(res.status_code, 400)
 
+    def test_user_contact_should_contain_only_digits(self):
+        self.register_salesperson_data['contact_no'] = 'numbe111'
+        res = self.client.post(self.register_url, self.register_salesperson_data, format='multipart')
+        # pdb.set_trace()
+        self.assertEqual(res.data['non_field_errors'][0], 'the contact number should only contain numbers.')
+        self.assertEqual(res.status_code, 400)
+
     def test_user_first_name_should_contain_only_letters(self):
         self.register_salesperson_data['first_name'] = 'name@'
         res = self.client.post(self.register_url, self.register_salesperson_data, format='multipart')
         # pdb.set_trace()
         self.assertEqual(res.data['non_field_errors'][0], 'The first name should only contain letters')
+        self.assertEqual(res.status_code, 400)
+
+    def test_user_last_name_should_contain_only_letters(self):
+        self.register_salesperson_data['last_name'] = 'name@'
+        res = self.client.post(self.register_url, self.register_salesperson_data, format='multipart')
+        # pdb.set_trace()
+        self.assertEqual(res.data['non_field_errors'][0], 'The last name should only contain letters')
         self.assertEqual(res.status_code, 400)
 
     # login view
@@ -70,8 +84,7 @@ class TestView(TestSetUp):
 
     def test_web_user_cannot_login_without_being_approved(self):
         self.client.post(self.register_url, self.register_officer_data, format='multipart')
-        res = self.client.post(self.mobile_login_url, self.login_cred_do)
-        # pdb.set_trace()
+        res = self.client.post(self.web_login_url, self.login_cred_do)
 
         self.assertEqual(res.data['detail'], 'Your account is not approved.')
         self.assertEqual(res.status_code, 401)
@@ -91,6 +104,32 @@ class TestView(TestSetUp):
 
         self.assertIsNotNone(res.data['token'])
         self.assertEqual(res.status_code, 200)
+
+    def test_mobile_user_can_not_login_with_invalid_credentials(self):
+        self.approve_account(user_data=self.register_salesperson_data)
+        self.login_cred_sp['password'] = 'wrong_pw'
+        res = self.client.post(self.mobile_login_url, self.login_cred_sp)
+
+        self.assertEqual(res.data['detail'], 'Invalid credentials')
+        self.assertEqual(res.status_code, 401)
+
+    def test_web_user_can_not_login_with_invalid_credentials(self):
+        self.approve_account(user_data=self.register_manager_data)
+        self.login_cred_om['password'] = 'wrong_pw'
+        res = self.client.post(self.web_login_url, self.login_cred_om)
+
+        self.assertEqual(res.data['detail'], 'Invalid credentials')
+        self.assertEqual(res.status_code, 401)
+
+    # def test_mobile_user_can_not_login_when_account_is_disabled(self):
+    #     user = self.approve_account(user_data=self.register_salesperson_data)
+    #     user.is_active = False
+    #     user.save()
+    #     res = self.client.post(self.mobile_login_url, self.login_cred_sp)
+    #     pdb.set_trace()
+    #
+    #     self.assertEqual(res.data['detail'], 'Your account is disabled.')
+    #     self.assertEqual(res.status_code, 401)
 
     def test_web_user_can_not_login_to_mobile_app(self):
         self.approve_account(user_data=self.register_manager_data)
@@ -141,7 +180,7 @@ class TestView(TestSetUp):
 
         self.assertEqual(res.status_code, 401)
 
-    def test__user_can_not_auto_with_invalid_token(self):
+    def test_user_can_not_auto_with_invalid_token(self):
         self.approve_account(user_data=self.register_manager_data)
         self.client.post(self.web_login_url, self.login_cred_om)
 
