@@ -80,4 +80,4 @@ class AllAssignedProductsListVehicleView(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return VehicleSalesperson.objects.all()
+        return VehicleSalesperson.objects.filter(is_valid=True)
