@@ -19,15 +19,15 @@ class TestView(TestSetUp):
     def vehicle_products_salesperson(self, products_id, salesperson_id, quantity, vehicle_id):
         assign_products_salesperson = {
             "assigned_vehicle": [
-                                    {
-                                        "quantity": quantity,
-                                        "product": products_id
-                                    }
-                                ],
+                {
+                    "quantity": quantity,
+                    "product": products_id
+                }
+            ],
             "vehicle": vehicle_id,
             "salesperson": salesperson_id
         }
-        return(assign_products_salesperson)
+        return assign_products_salesperson
 
     def test_do_can_register_products(self):
         self.approve_account(user_data=self.register_officer_data)
@@ -65,12 +65,13 @@ class TestView(TestSetUp):
         vehicle = self.client.post(self.register_vehicle_url, self.register_vehicle_data, **header, format='multipart')
         salesperson = self.approve_account(user_data=self.register_salesperson_data)
 
-        assignments = self.vehicle_products_salesperson(vehicle_id = vehicle.data['id'],products_id = product.data['id'], salesperson_id = salesperson.id, quantity = 3)
+        assignments = self.vehicle_products_salesperson(vehicle_id=vehicle.data['id'], products_id=product.data['id'],
+                                                        salesperson_id=salesperson.id, quantity=3)
         res = self.client.post(self.assign_vehicle, json.dumps(assignments), **header, content_type='application/json')
         # pdb.set_trace()
         self.assertEqual(res.data['vehicle'], assignments['vehicle'])
         self.assertEqual(res.status_code, 201)
-        
+
     def test_get_all_assigned_vehicles(self):
         officer = self.approve_account(user_data=self.register_officer_data)
         login_res = self.client.post(self.web_login_url, self.login_cred_do)
@@ -81,7 +82,8 @@ class TestView(TestSetUp):
         vehicle = self.client.post(self.register_vehicle_url, self.register_vehicle_data, **header, format='multipart')
         salesperson = self.approve_account(user_data=self.register_salesperson_data)
 
-        assignments = self.vehicle_products_salesperson(vehicle_id = vehicle.data['id'],products_id = product.data['id'], salesperson_id = salesperson.id, quantity = 3)
+        assignments = self.vehicle_products_salesperson(vehicle_id=vehicle.data['id'], products_id=product.data['id'],
+                                                        salesperson_id=salesperson.id, quantity=3)
         self.client.post(self.assign_vehicle, json.dumps(assignments), **header, content_type='application/json')
 
         res = self.client.get(self.get_assigned_vehicles, **header, )
@@ -89,8 +91,3 @@ class TestView(TestSetUp):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(len(res.data), 1)
         # pdb.set_trace()
-
-
-        
-
-

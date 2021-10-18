@@ -60,7 +60,7 @@ class TestSetUp(APITestCase):
             "contact_no": '1234567890',
             "profile_picture": generate_photo_file(),
         }
-        #product data
+        # product data
         self.register_product_data = {
             "short_name": 'short name',
             "long_name": 'long name',
@@ -69,21 +69,21 @@ class TestSetUp(APITestCase):
             "price": 120,
             "product_image": generate_photo_file(),
         }
-        #vehicle data
+        # vehicle data
         self.register_vehicle_data = {
             "vehicle_number": 'WB-1234',
             "vehicle_type": 'THREEWHEELER',
             "vehicle_model": 'Piaggio',
             "vehicle_image": generate_photo_file(),
         }
-        #vehicle products salesperson assignment
+        # vehicle products salesperson assignment
         self.assign_products_salesperson = {
             "assigned_vehicle": [
-                                    {
-                                        "quantity": 3,
-                                        "product": 1
-                                    }
-                                ],
+                {
+                    "quantity": 3,
+                    "product": 1
+                }
+            ],
             "vehicle": 1,
             "salesperson": 2
         }
