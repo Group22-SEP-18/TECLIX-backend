@@ -1,5 +1,5 @@
 [run]
-source=asset_api/,
+source=users/,asset_api/,customer_api/,
 omit=
     teclixenv
     */migrations/*
