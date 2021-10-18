@@ -47,6 +47,7 @@ class VehicleSalesperson(models.Model):
     vehicle = models.ForeignKey(to=Vehicle, related_name='vehicle_items', on_delete=models.CASCADE, db_index=True)
     salesperson = models.ForeignKey(to=Staff, related_name='vehicle_salesperson', on_delete=models.CASCADE)
     assigned_by = models.ForeignKey(to=Staff, related_name='salesperson_assigner', on_delete=models.CASCADE)
+    is_valid = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ['vehicle', 'salesperson']
@@ -55,6 +56,9 @@ class VehicleSalesperson(models.Model):
     def __str__(self):
         return str(self.vehicle) + ' ' + str(self.salesperson)
 
+    def valid_product_only(self):
+        return VehicleProduct.objects.filter(vehicle_salesperson=self, is_valid=True)
+
 
 class VehicleProduct(models.Model):
     vehicle_salesperson = models.ForeignKey(to=VehicleSalesperson, related_name='assigned_vehicle',
@@ -62,6 +66,7 @@ class VehicleProduct(models.Model):
                                             db_index=True)
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE, related_name='assigned_products')
     quantity = models.PositiveIntegerField()
+    is_valid = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ['vehicle_salesperson', 'product']
