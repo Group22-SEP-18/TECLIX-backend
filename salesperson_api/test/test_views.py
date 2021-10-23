@@ -5,6 +5,7 @@ from customer_api.models import Customer, ServiceOrder
 from salesperson_api.models import SalespersonLocation, Leaderboard
 from .test_setup import TestSetUp
 
+
 class TestView(TestSetUp):
     def approve_account(self, user_data):
         res1 = self.client.post(self.register_url, user_data, format='multipart')
@@ -35,7 +36,7 @@ class TestView(TestSetUp):
         sp.save()
 
         # create new customer
-        customer= Customer.objects.create(**self.customer_data)
+        customer = Customer.objects.create(**self.customer_data)
         # create location
         location = SalespersonLocation.objects.create(customer=customer, salesperson=sp)
         return sp
@@ -48,7 +49,7 @@ class TestView(TestSetUp):
         sp.save()
 
         # create new customer
-        customer= Customer.objects.create(**self.customer_data)
+        customer = Customer.objects.create(**self.customer_data)
         # create serviceorder
         so = ServiceOrder.objects.create(customer=customer, salesperson=sp, original_price='0.00', discount='0.00')
         return sp
@@ -153,7 +154,6 @@ class TestView(TestSetUp):
         locations_sp_url = reverse('salesperson:all-salesperson-so', kwargs={'id': sp.id})
         res = self.client.get(locations_sp_url, **header, )
         self.assertEqual(len(res.data), 1)
-        print(res.data)
 
     def test_manager_can_get_single_sp_so(self):
         sp = self.add_serviceorder()
@@ -184,7 +184,8 @@ class TestView(TestSetUp):
     # LeaderboardPointSchemaView
     def test_manager_can_create_leaderboard_schema(self):
         header = self.get_manager_header()
-        res = self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart', **header,)
+        res = self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart',
+                               **header, )
         self.assertEqual(res.data['points_type'], self.leaderboard_schema_data['points_type'])
         self.assertEqual(res.data['percentage'], self.leaderboard_schema_data['percentage'])
         self.assertEqual(res.data['bonus_points'], self.leaderboard_schema_data['bonus_points'])
@@ -192,13 +193,14 @@ class TestView(TestSetUp):
 
     def test_do_can_not_create_leaderboard_schema(self):
         header = self.get_officer_header()
-        res = self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart', **header,)
+        res = self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart',
+                               **header, )
         self.assertEqual(res.status_code, 403)
 
     def test_manager_can_get_leaderboard_schema(self):
         header = self.get_manager_header()
-        self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart', **header,)
-        res = self.client.get(self.leaderboard_schema_url, **header,)
+        self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart', **header, )
+        res = self.client.get(self.leaderboard_schema_url, **header, )
         self.assertEqual(res.data[0]['points_type'], self.leaderboard_schema_data['points_type'])
         self.assertEqual(res.data[0]['percentage'], self.leaderboard_schema_data['percentage'])
         self.assertEqual(res.data[0]['bonus_points'], self.leaderboard_schema_data['bonus_points'])
@@ -207,6 +209,7 @@ class TestView(TestSetUp):
     def test_do_can_not_get_leaderboard_schema(self):
         header = self.get_officer_header()
         manager_header = self.get_manager_header()
-        self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart', **manager_header,)
-        res = self.client.get(self.leaderboard_schema_url, **header,)
+        self.client.post(self.leaderboard_schema_url, self.leaderboard_schema_data, format='multipart',
+                         **manager_header, )
+        res = self.client.get(self.leaderboard_schema_url, **header, )
         self.assertEqual(res.status_code, 403)
