@@ -71,7 +71,7 @@ class AssignedProductsListVehicleView(ListAPIView):
 
     # lookup_field = "id"
     def get_queryset(self):
-        return VehicleSalesperson.objects.filter(salesperson=self.request.user)
+        return VehicleSalesperson.objects.filter(salesperson=self.request.user, is_valid=True)
 
 
 class AllAssignedProductsListVehicleView(ListAPIView):
@@ -80,4 +80,4 @@ class AllAssignedProductsListVehicleView(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return VehicleSalesperson.objects.all()
+        return VehicleSalesperson.objects.filter(is_valid=True)

@@ -76,7 +76,7 @@ class AssignedVehicleItemsSerializer(serializers.ModelSerializer):
 class SalespersonAssignedVehicleSerializer(serializers.ModelSerializer):
     vehicle = VehicleDetailSerializer()
 
-    assigned_vehicle = AssignedVehicleItemsSerializer(many=True, )
+    assigned_vehicle = AssignedVehicleItemsSerializer(many=True, source='valid_product_only')
 
     class Meta:
         model = VehicleSalesperson
