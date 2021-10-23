@@ -6,13 +6,14 @@ from .serializers import SalespersonViewSerializer, LocationListViewSerializer, 
 from users.models import Staff
 from customer_api.models import ServiceOrder
 from .models import SalespersonLocation, Leaderboard, LeaderboardPointSchema
+from users.permissions import IsManager
 
 
 # Create your views here.
 class SalespersonListView(ListAPIView):
     serializer_class = SalespersonViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         salespersons = Staff.objects.filter(user_role='SALESPERSON')
@@ -21,21 +22,21 @@ class SalespersonListView(ListAPIView):
 
 class SalespersonView(RetrieveUpdateAPIView):
     serializer_class = SalespersonViewSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Staff.objects.filter()
     lookup_field = "id"
 
 
 class LocationListView(ListAPIView):
     serializer_class = LocationListViewSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = SalespersonLocation.objects.all()
 
 
 class CurrentLocationListView(ListAPIView):
     serializer_class = LocationListViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         current_locations = SalespersonLocation.objects.all().order_by('salesperson', 'date').distinct('salesperson')
@@ -45,7 +46,7 @@ class CurrentLocationListView(ListAPIView):
 class SalespersonLocationView(ListAPIView):
     serializer_class = LocationListViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     # lookup_field = 'salesperson'
 
     def get_queryset(self):
@@ -56,7 +57,7 @@ class SalespersonLocationView(ListAPIView):
 class SalespersonServiceOrdersView(ListAPIView):
     serializer_class = ServiceOrderViewSerializer
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         orders = ServiceOrder.objects.filter(salesperson_id=self.kwargs['id'])
@@ -65,11 +66,11 @@ class SalespersonServiceOrdersView(ListAPIView):
 
 class LeaderboardView(ListAPIView):
     serializer_class = LeaderboardViewSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = Leaderboard.objects.all().order_by('-points_current_month')
 
 
 class LeaderboardPointSchemaView(ListCreateAPIView):
     serializer_class = LeaderboardPointSchemaViewSerializer
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsManager)
     queryset = LeaderboardPointSchema.objects.all()
