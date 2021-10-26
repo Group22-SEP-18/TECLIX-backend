@@ -85,6 +85,7 @@ class AllAssignedProductsListVehicleView(ListAPIView):
 
 class DeleteAssignedVehicle(DestroyAPIView):
     serializer_class = DeleteAssignedVehicleSerializer
+    permission_classes = (IsAuthenticated, IsOfficer,)
     lookup_field = 'id'
 
     def get_queryset(self):
