@@ -1,10 +1,10 @@
 from _cffi_backend import Lib
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView, \
-    RetrieveAPIView
+    DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ProductDetailsSerializer, ProductViewSerializer, VehicleDetailsSerializer, \
     VehicleViewSerializer, AssignVehicleSalespersonSerializer, \
-    SalespersonAssignedVehicleSerializer
+    SalespersonAssignedVehicleSerializer, DeleteAssignedVehicleSerializer
 from .models import Product, Vehicle, VehicleSalesperson, VehicleProduct
 from users.permissions import IsOfficer
 
@@ -81,3 +81,13 @@ class AllAssignedProductsListVehicleView(ListAPIView):
 
     def get_queryset(self):
         return VehicleSalesperson.objects.filter(is_valid=True)
+
+
+class DeleteAssignedVehicle(DestroyAPIView):
+    serializer_class = DeleteAssignedVehicleSerializer
+    permission_classes = (IsAuthenticated, IsOfficer,)
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        print(self.kwargs['id'])
+        return VehicleSalesperson.objects.filter(id=self.kwargs['id'], is_valid=True)

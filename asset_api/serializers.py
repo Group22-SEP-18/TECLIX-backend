@@ -82,3 +82,9 @@ class SalespersonAssignedVehicleSerializer(serializers.ModelSerializer):
         model = VehicleSalesperson
         exclude = ['assigned_by']
         extra_fields = ['assigned_vehicle']
+
+
+class DeleteAssignedVehicleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VehicleSalesperson
+        fields = '__all__'
