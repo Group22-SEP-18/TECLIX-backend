@@ -3,7 +3,7 @@ import decimal
 
 from django.db.models.functions import Coalesce
 
-from .serializers import GetMonthlySalesSerializer
+from .serializers import GetMonthlySalesSerializer, GetSalesSerializer, GetMonthlyTotalSalesSerializer
 from rest_framework import generics, status
 from rest_framework import permissions
 from customer_api.models import ServiceOrder, CustomerLatePay, Customer
@@ -72,3 +72,95 @@ class GetMonthlyComparison(generics.GenericAPIView):
                                           created_date__year=datetime.date.today().year).aggregate(
             customer_count=Count('id'))
         return Response({**results, **results2, **result3}, status=status.HTTP_200_OK)
+
+# object in array for each salesperson for current month
+# [
+#   {
+#     salesperson: 'salesperson',
+#     sales: 000.00,
+#   }
+# ] 
+class GetCurrentMonthSalesForSalesPersons(generics.GenericAPIView):
+    serializer_class = GetSalesSerializer
+
+    def get(self, request):
+        this_month = datetime.date.today().month
+        results = ServiceOrder.objects.filter(order_date__month=this_month,
+        order_date__year=datetime.date.today().year).values('salesperson').annotate(
+            sales=Sum('original_price'))
+        return Response(results, status=status.HTTP_200_OK)
+
+# Compare last two months and show, growth per salesperson (double column bar chart)
+# response - object in array for each month
+# [
+#   {
+#     salesperson: 'salesperson',
+#     sales_last_month: 000.00,
+#     sales_current_month: 000.00,
+#   }
+# ]
+class GetSalespersonPerformanceComparisonView(generics.GenericAPIView):
+    #permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = GetSalesSerializer
+
+    def get(self, request):
+        today = datetime.date.today()
+        first = today.replace(day=1)
+        lastMonth = first - datetime.timedelta(days=1)
+        print(lastMonth)
+        sales_current_month = ServiceOrder.objects.filter(order_date__month=datetime.date.today().month,
+        order_date__year=datetime.date.today().year).values('salesperson').annotate(
+            sales_current_month=Sum('original_price'))
+        sales_last_month = ServiceOrder.objects.filter(order_date__month=lastMonth.month,
+        order_date__year=lastMonth.year).values('salesperson').annotate(
+            sales_last_month=Sum('original_price'))
+
+        # return Response({'salesperson': sales_current_month['salesperson'], 'sales_current_month': sales_current_month['original_price__sum'],
+        #                  'sales_last_month': sales_last_month['amount__sum']},
+        #                 status=status.HTTP_200_OK)
+        return Response(sales_last_month, status=status.HTTP_200_OK)
+
+# Total sales line chart
+# response - object in array for each month
+# [
+#   {
+#     month: 'month',
+#     sales: 000.00
+#   }
+# ]
+class GetMonthlyTotalSales(generics.GenericAPIView):
+    serializer_class = GetMonthlyTotalSalesSerializer
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        results = ServiceOrder.objects.all().values('order_date__month').annotate(
+            sales=Sum('original_price')).order_by(
+            'order_date__month')
+        return Response(results, status=status.HTTP_200_OK)
+
+# Divided bar chart per day sales one half paid another half later And a pie chart illustrating that.
+# response - object for each day in the current month
+# [
+#   {
+#     day: '01',
+#     paid_amount: 000.00,
+#     pay_later_amount: 000.00,
+#   }
+# ]
+class GetMonthlyPayedAndPayLaterComparison(generics.GenericAPIView):
+    # TODO:
+    pass
+
+# sales per product by month
+# [
+#   {
+#     product_id: 'product id',
+#     product_short_name: 'product name',
+#     product_long_name: 'product name',
+#     total: 000.00,
+#     date: '2021-06-22T17:33:34Z',
+#   }
+# ]
+class GetProductReport(generics.GenericAPIView):
+    # TODO:
+    pass
