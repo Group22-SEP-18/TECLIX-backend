@@ -10,6 +10,7 @@ class GetMonthlySalesSerializer(serializers.ModelSerializer):
         model = ServiceOrder
         fields = ['salesperson', 'month']
 
+
 class GetSalesSerializer(serializers.ModelSerializer):
     salesperson = SalespersonDetailSerializer()
     month = serializers.IntegerField()
@@ -17,6 +18,7 @@ class GetSalesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceOrder
         fields = ['salesperson', 'month']
+
 
 class GetMonthlyTotalSalesSerializer(serializers.ModelSerializer):
     month = serializers.IntegerField()

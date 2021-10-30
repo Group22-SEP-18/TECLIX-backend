@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 from django.db.models.functions import Coalesce
+from django.db.models import DecimalField, FloatField
 
 from .serializers import GetMonthlySalesSerializer, GetSalesSerializer, GetMonthlyTotalSalesSerializer
 from rest_framework import generics, status
@@ -9,6 +10,7 @@ from rest_framework import permissions
 from customer_api.models import ServiceOrder, CustomerLatePay, Customer
 from rest_framework.response import Response
 from django.db.models import Sum, Count
+from users.models import Staff
 
 
 class GetMonthlySalespersonSalesView(generics.GenericAPIView):
@@ -73,6 +75,7 @@ class GetMonthlyComparison(generics.GenericAPIView):
             customer_count=Count('id'))
         return Response({**results, **results2, **result3}, status=status.HTTP_200_OK)
 
+
 # object in array for each salesperson for current month
 # [
 #   {
@@ -86,9 +89,16 @@ class GetCurrentMonthSalesForSalesPersons(generics.GenericAPIView):
     def get(self, request):
         this_month = datetime.date.today().month
         results = ServiceOrder.objects.filter(order_date__month=this_month,
-        order_date__year=datetime.date.today().year).values('salesperson').annotate(
+                                              order_date__year=datetime.date.today().year).values(
+            'salesperson').annotate(
             sales=Sum('original_price'))
+
+        for val in results:
+            sp = Staff.objects.get(id=val['salesperson'])
+            val['salesperson'] = sp.first_name + ' ' + sp.last_name
+
         return Response(results, status=status.HTTP_200_OK)
+
 
 # Compare last two months and show, growth per salesperson (double column bar chart)
 # response - object in array for each month
@@ -100,25 +110,41 @@ class GetCurrentMonthSalesForSalesPersons(generics.GenericAPIView):
 #   }
 # ]
 class GetSalespersonPerformanceComparisonView(generics.GenericAPIView):
-    #permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     serializer_class = GetSalesSerializer
 
     def get(self, request):
         today = datetime.date.today()
         first = today.replace(day=1)
-        lastMonth = first - datetime.timedelta(days=1)
-        print(lastMonth)
-        sales_current_month = ServiceOrder.objects.filter(order_date__month=datetime.date.today().month,
-        order_date__year=datetime.date.today().year).values('salesperson').annotate(
-            sales_current_month=Sum('original_price'))
-        sales_last_month = ServiceOrder.objects.filter(order_date__month=lastMonth.month,
-        order_date__year=lastMonth.year).values('salesperson').annotate(
-            sales_last_month=Sum('original_price'))
+        last_month = first - datetime.timedelta(days=1)
 
-        # return Response({'salesperson': sales_current_month['salesperson'], 'sales_current_month': sales_current_month['original_price__sum'],
-        #                  'sales_last_month': sales_last_month['amount__sum']},
-        #                 status=status.HTTP_200_OK)
-        return Response(sales_last_month, status=status.HTTP_200_OK)
+        sp_list = Staff.objects.filter(is_approved=True, user_role='SALESPERSON')
+        result = []
+        for sp in sp_list:
+            cur = ServiceOrder.objects.filter(order_date__month=datetime.date.today().month,
+                                              order_date__year=datetime.date.today().year,
+                                              salesperson=sp.id).values('salesperson').annotate(
+                sales_current_month=Coalesce(Sum('original_price', output_field=FloatField()), float(0.00)))
+
+            try:
+                cur_value = cur[0]['sales_current_month']
+            except:
+                cur_value = 0.0
+
+            pre = ServiceOrder.objects.filter(order_date__month=last_month.month,
+                                              order_date__year=last_month.year,
+                                              salesperson=sp.id).values('salesperson').annotate(
+                sales_last_month=Coalesce(Sum('original_price', output_field=FloatField()), float(0.00)))
+
+            try:
+                pre_value = pre[0]['sales_last_month']
+            except:
+                pre_value = 0.0
+
+            result.append({'salesperson': sp.first_name + ' ' + sp.last_name, 'sales_current_month': cur_value,
+                           'sales_last_month': pre_value})
+        return Response(result, status=status.HTTP_200_OK)
+
 
 # Total sales line chart
 # response - object in array for each month
@@ -130,6 +156,7 @@ class GetSalespersonPerformanceComparisonView(generics.GenericAPIView):
 # ]
 class GetMonthlyTotalSales(generics.GenericAPIView):
     serializer_class = GetMonthlyTotalSalesSerializer
+
     # permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
@@ -137,6 +164,7 @@ class GetMonthlyTotalSales(generics.GenericAPIView):
             sales=Sum('original_price')).order_by(
             'order_date__month')
         return Response(results, status=status.HTTP_200_OK)
+
 
 # Divided bar chart per day sales one half paid another half later And a pie chart illustrating that.
 # response - object for each day in the current month
@@ -150,6 +178,7 @@ class GetMonthlyTotalSales(generics.GenericAPIView):
 class GetMonthlyPayedAndPayLaterComparison(generics.GenericAPIView):
     # TODO:
     pass
+
 
 # sales per product by month
 # [
