@@ -1,11 +1,11 @@
 import decimal
 
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, RetrieveAPIView, \
-    CreateAPIView, DestroyAPIView
+    CreateAPIView, DestroyAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import CustomerViewSerializer, ServiceOrderViewSerializer, CreateServiceOrderSerializer, \
     CustomerSearchSerializer, CustomerLatePayListViewSerializer, CustomerLatePayCreateSerializer, \
-    CustomerLatePayViewSerializer, LoyaltyPointsSerializer
+    CustomerLatePayViewSerializer, LoyaltyPointsSerializer, LoyaltyPointSchemaViewSerializer
 from .models import Customer, ServiceOrder, CustomerLatePay, CustomerLoyaltyPointScheme
 from rest_framework import filters
 from users.permissions import IsSalesperson, IsManager
@@ -148,4 +148,17 @@ class CreateLoyaltyPointsView(CreateAPIView):
 class DeleteLoyaltyPointsView(DestroyAPIView):
     serializer_class = LoyaltyPointsSerializer
     permission_classes = (IsAuthenticated, IsManager)
+    queryset = CustomerLoyaltyPointScheme.objects.all()
+
+
+class LoyaltyPointSchemaView(ListCreateAPIView):
+    serializer_class = LoyaltyPointSchemaViewSerializer
+    permission_classes = (IsAuthenticated, IsManager)
+    queryset = CustomerLoyaltyPointScheme.objects.all()
+
+
+class UpdateLoyaltyPointSchema(UpdateAPIView):
+    permission_classes = (IsAuthenticated, IsManager)
+    serializer_class = LoyaltyPointSchemaViewSerializer
+    lookup_field = 'id'
     queryset = CustomerLoyaltyPointScheme.objects.all()

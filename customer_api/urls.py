@@ -1,6 +1,6 @@
 from .views import CustomerListView, CustomerView, ServiceOrderListView, ServiceOrderView, CustomerServiceOrdersView, \
     CreateServiceOrderView, SearchCustomerView, CustomerLatePayView, CreateLatePayView, AllCustomerLatePayView, \
-    CreateLoyaltyPointsView, DeleteLoyaltyPointsView
+    CreateLoyaltyPointsView, DeleteLoyaltyPointsView, LoyaltyPointSchemaView, UpdateLoyaltyPointSchema
 from django.urls import path
 
 app_name = 'customer'
@@ -18,5 +18,8 @@ urlpatterns = [
     path('late-payment/cus/<int:id>', CustomerLatePayView.as_view(), name='per-customer-late-pay'),
     path('loaylty-points/', CreateLoyaltyPointsView.as_view(), name='create-loyalty-points'),
     path('loaylty-points/<int:pk>', DeleteLoyaltyPointsView.as_view(), name='delete-loyalty-points'),
+    path('loyalty-point-schema/', LoyaltyPointSchemaView.as_view(), name='loyalty-point-schema'),
+    path('loyalty-point-schema/<int:id>', UpdateLoyaltyPointSchema.as_view(),
+         name='update-loyalty-point-schema'),
 
 ]
