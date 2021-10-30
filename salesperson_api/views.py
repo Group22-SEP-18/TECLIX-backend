@@ -1,4 +1,5 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateAPIView, \
+    UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from customer_api.serializers import ServiceOrderViewSerializer
 from .serializers import SalespersonViewSerializer, LocationListViewSerializer, LeaderboardViewSerializer, \
@@ -47,6 +48,7 @@ class SalespersonLocationView(ListAPIView):
     serializer_class = LocationListViewSerializer
 
     permission_classes = (IsAuthenticated,)
+
     # lookup_field = 'salesperson'
 
     def get_queryset(self):
@@ -73,4 +75,10 @@ class LeaderboardView(ListAPIView):
 class LeaderboardPointSchemaView(ListCreateAPIView):
     serializer_class = LeaderboardPointSchemaViewSerializer
     permission_classes = (IsAuthenticated, IsManager)
+    queryset = LeaderboardPointSchema.objects.all()
+
+
+class UpdateLeaderboardSchema(UpdateAPIView):
+    serializer_class = LeaderboardPointSchemaViewSerializer
+    lookup_field = 'id'
     queryset = LeaderboardPointSchema.objects.all()
