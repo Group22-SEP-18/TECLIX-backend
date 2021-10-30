@@ -162,3 +162,8 @@ class LoyaltyPointsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerLoyaltyPointScheme
         fields = '__all__'
+
+class LoyaltyPointSchemaViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerLoyaltyPointScheme
+        fields = '__all__'
