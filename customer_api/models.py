@@ -91,9 +91,11 @@ class CustomerLatePay(models.Model):
 
 
 class CustomerLoyaltyPointScheme(models.Model):
-    minimum_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    max_amount = models.DecimalField(max_digits=10, decimal_places=2, default=100000.00)
-    point_percentage = models.PositiveSmallIntegerField()
-
-    def __str__(self):
-        return str(self.id) + ' ' + str(self.minimum_amount) + '> '
+    POINTS_TYPE_OPTIONS = {
+        ('LATE_PAYMENTS', 'Late Payments'),
+        ('SO_PAY', 'SO payed'),
+        ('SO_PAY_LATER', 'SO pay later'),
+    }
+    points_type = models.CharField(choices=POINTS_TYPE_OPTIONS, max_length=100, default='LATE_PAYMENTS')
+    percentage = models.DecimalField(max_digits=4, decimal_places=2, default=0.00)
+    bonus_points = models.DecimalField(max_digits=8, decimal_places=2, default=0.0)
