@@ -1,5 +1,6 @@
 from .views import SalespersonListView, SalespersonView, LocationListView, CurrentLocationListView, \
-    SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView, LeaderboardPointSchemaView
+    SalespersonLocationView, SalespersonServiceOrdersView, LeaderboardView, LeaderboardPointSchemaView, \
+    UpdateLeaderboardSchema
 from django.urls import path
 
 app_name = 'salesperson'
@@ -13,4 +14,7 @@ urlpatterns = [
     path('service-orders/salesperson/<str:id>', SalespersonServiceOrdersView.as_view(), name='all-salesperson-so'),
     path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
     path('leaderboard-point-schema/', LeaderboardPointSchemaView.as_view(), name='leaderboard-point-schema'),
+    path('leaderboard-point-schema/<int:id>', UpdateLeaderboardSchema.as_view(),
+         name='update-leaderboard-point-schema'),
+
 ]
