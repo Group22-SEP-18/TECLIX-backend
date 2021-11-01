@@ -173,4 +173,4 @@ CLOUDINARY_STORAGE = {
 
 }
 
-CORS_ORIGIN_WHITELIST = 'http://localhost:3000',
+CORS_ORIGIN_WHITELIST = 'http://localhost:3000','https://teclix-webapp.netlify.app',
