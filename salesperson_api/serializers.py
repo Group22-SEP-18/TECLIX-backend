@@ -41,6 +41,8 @@ class LeaderboardViewSerializer(serializers.ModelSerializer):
 
 
 class LeaderboardPointSchemaViewSerializer(serializers.ModelSerializer):
+    points_type = serializers.CharField(source='get_points_type_display')
+
     class Meta:
         model = LeaderboardPointSchema
         fields = '__all__'

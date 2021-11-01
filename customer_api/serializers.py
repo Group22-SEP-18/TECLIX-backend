@@ -163,7 +163,10 @@ class LoyaltyPointsSerializer(serializers.ModelSerializer):
         model = CustomerLoyaltyPointScheme
         fields = '__all__'
 
+
 class LoyaltyPointSchemaViewSerializer(serializers.ModelSerializer):
+    points_type = serializers.CharField(source='get_points_type_display')
+
     class Meta:
         model = CustomerLoyaltyPointScheme
         fields = '__all__'
