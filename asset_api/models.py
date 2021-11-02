@@ -11,6 +11,9 @@ class Product(models.Model):
         ('chips', 'Chips'),
         ('cookies', 'Cookies'),
         ('cheese', 'Cheese'),
+        ('snacks', 'Snacks'),
+        ('sauce', 'Sauce'),
+
     }
     short_name = models.CharField(max_length=80)
     long_name = models.CharField(max_length=250)
