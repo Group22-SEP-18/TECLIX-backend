@@ -31,10 +31,8 @@ class Vehicle(models.Model):
     VEHICLE_TYPES = {
         ('VAN', 'Van'),
         ('LORRY', 'Lorry'),
-        ('THREEWHEELER', 'Threewheeler'),
-        ('CAB', 'Cab'),
+        ('TUK', 'Tuk'),
         ('BIKE', 'Bike'),
-        ('BUS', 'Bus'),
     }
     vehicle_number = models.CharField(max_length=80)
     vehicle_type = models.CharField(choices=VEHICLE_TYPES, max_length=150)
