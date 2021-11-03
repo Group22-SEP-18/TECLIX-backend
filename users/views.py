@@ -98,8 +98,7 @@ class UpdateDistOfficerAccStateView(generics.CreateAPIView):
 
 class GetDOAccountsView(generics.ListAPIView):
     serializer_class = DOAccountSerializer
-
-    # permission_classes = (permissions.IsAuthenticated, IsManager)
+    permission_classes = (permissions.IsAuthenticated, IsManager)
 
     def get_queryset(self):
         return Staff.objects.filter(user_role='OFFICER', is_rejected=False)
