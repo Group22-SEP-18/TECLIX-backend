@@ -41,7 +41,7 @@ urlpatterns = [
                   path('asset-api/', include('asset_api.urls', namespace='asset')),
                   path('salesperson-api/', include('salesperson_api.urls', namespace='salesperson')),
                   path('report-api/', include('report_api.urls', namespace='report')),
-                  path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+                  # path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+                  path('', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
                   path('api/api.json/', schema_view.without_ui(cache_timeout=0), name='schema-swagger-ui'),
-                  path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
