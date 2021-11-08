@@ -14,10 +14,10 @@ from users.permissions import IsManager
 class SalespersonListView(ListAPIView):
     serializer_class = SalespersonViewSerializer
 
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        salespersons = Staff.objects.filter(user_role='SALESPERSON')
+        salespersons = Staff.objects.filter(user_role='SALESPERSON', is_rejected=False)
         return salespersons
 
 

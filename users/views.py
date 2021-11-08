@@ -88,7 +88,7 @@ class UpdateDistOfficerAccStateView(generics.CreateAPIView):
     lookup_field = 'id'
 
     def perform_create(self, serializer):
-        do = Staff.objects.get(id=self.kwargs['id']);
+        do = Staff.objects.get(id=self.kwargs['id'])
         print(self.kwargs['id'])
         if not self.request.data['is_approved']:
             do.is_rejected = True
